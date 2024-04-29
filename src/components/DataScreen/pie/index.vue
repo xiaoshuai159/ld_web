@@ -8,23 +8,22 @@
   const chartsRef = ref<HTMLElement | null>()
   var trafficWay = [
     {
-      name: 'Ⅰ类',
+      name: 'CNNVD',
+      value: 30,
+    },
+    {
+      name: 'CNVD',
       value: 20,
     },
     {
-      name: 'Ⅱ类',
-      value: 20,
+      name: 'WooYun',
+      value: 18,
     },
     {
-      name: 'Ⅲ类',
-      value: 20,
+      name: 'SCAP',
+      value: 15,
     },
-    {
-      name: 'Ⅳ类',
-      value: 20,
-    },
-    { name: 'Ⅴ类', value: 20 },
-    { name: '劣Ⅴ类', value: 20 },
+    { name: 'Seebug', value: 12 },
   ]
 
   var data = []
@@ -104,7 +103,7 @@
     color: color,
     title: [
       {
-        text: '水质监测',
+        text: '漏洞来源厂商',
         top: '44%',
         textAlign: 'center',
         left: '49.50%',
@@ -116,19 +115,19 @@
           fontWeight: '400',
         },
       },
+      // {
+      //   text: '水环境监测站',
+      //   top: '49%',
+      //   textAlign: 'center',
+      //   left: '49.50%',
+      //   textStyle: {
+      //     color: '#fff',
+      //     fontSize: 20,
+      //     fontWeight: '400',
+      //   },
+      // },
       {
-        text: '水环境监测站',
-        top: '49%',
-        textAlign: 'center',
-        left: '49.50%',
-        textStyle: {
-          color: '#fff',
-          fontSize: 20,
-          fontWeight: '400',
-        },
-      },
-      {
-        text: '9',
+        text: '5',
         top: '53%',
         textAlign: 'center',
         left: '48%',

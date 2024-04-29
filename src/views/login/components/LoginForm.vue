@@ -1,6 +1,6 @@
 <template>
   <div class="login-title">
-    <h2 class="title">虚拟货币全链条监测平台</h2>
+    <h2 class="title">网安侧漏洞利用威胁发现子系统</h2>
   </div>
   <el-form ref="ruleFormRef" :model="ruleForm" :rules="rules">
     <el-form-item label="" prop="username">

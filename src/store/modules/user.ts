@@ -25,8 +25,10 @@ export const useUserStore = defineStore({
       return new Promise(async (resolve, reject) => {
         const { data: res } = await service.post('/api/v1/login_in', formData)
         if (res.code == 200) {
-          this.token = res.token
+          this.token = res.data.token
           this.userInfo = res.data
+          console.log(this.token)
+
           await this.getRoles()
           resolve(username)
         } else {
@@ -65,6 +67,9 @@ export const useUserStore = defineStore({
           this.roles = []
           resolve(null)
         } else {
+          this.token = null
+          this.userInfo = {}
+          this.roles = []
           resolve(null)
         }
       })

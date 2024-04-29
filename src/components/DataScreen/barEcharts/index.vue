@@ -7,7 +7,7 @@
   import { EChartsType } from 'echarts/core'
   import { onMounted, ref, reactive } from 'vue'
   const chartsRef = ref<HTMLElement | null>()
-  const data = [154, 230, 224, 218, 135, 147, 260]
+  const data = [100, 135, 218, 224, 230]
   const color = ['#fa796f', '#54c1fb', '#ca6cd4', '#59dcc1', '#09a4ea', '#e98f4d', '#ea8e49']
   const dataOptions = []
 
@@ -22,9 +22,18 @@
   })
 
   const options = {
+    title: {
+      text: '漏洞数量TOP5', // 设置标题文本
+      textStyle: {
+        fontSize: '18',
+        color: '#5fe5ff',
+      },
+      top: '10',
+      left: '10',
+    },
     color,
     grid: {
-      top: '10%',
+      top: '19%',
       left: '3%',
       right: '4%',
       bottom: '10%',
@@ -39,13 +48,14 @@
         const tipHtml = `
                      <div class="m-info" style=" opacity: 0.95;font-size: 12px; color: white;" >
                          <div class="title" ></div>
-                         <div class="title" >完成占比${name[0].value}</div>
+                         <div class="title" >漏洞种类数量：${name[0].value}</div>
                  </div>`
         return tipHtml
       },
     },
     yAxis: {
-      type: 'value',
+      type: 'category',
+      data: ['信息泄露', '文件包含', '命令注入', '弱口令爆破', '远程代码执行'],
       // 设置坐标轴的 文字样式
       axisLabel: {
         color: '#bbdaff',
@@ -63,7 +73,8 @@
       },
     },
     xAxis: {
-      type: 'category',
+      type: 'value',
+      // type: 'category',
       splitLine: {
         show: false,
       },
@@ -73,7 +84,7 @@
           color: '#2d5baf',
         },
       },
-      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+
       axisLabel: {
         // 设置坐标轴的 文字样式
         color: '#bbdaff',
@@ -86,6 +97,7 @@
     },
     series: [
       {
+        name: '漏洞种类排名',
         data: dataOptions,
         type: 'bar',
         barMaxWidth: 18,

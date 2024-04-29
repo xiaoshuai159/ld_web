@@ -6,11 +6,12 @@ interface extendRoute {
   hidden?: boolean
 }
 
-import monitorRouter from './modules/monitor'
-import anonymousRouter from './modules/anonymous'
-
+import basicDataManage from './modules/basicDataManage'
+import taskManage from './modules/taskManage'
+import systemManage from './modules/systemManage'
+import dataScreenRouter from './modules/dataScreen'
 // 异步组件
-export const asyncRoutes = [...monitorRouter, ...anonymousRouter]
+export const asyncRoutes = [...basicDataManage, ...taskManage, ...dataScreenRouter]
 
 /**
  * path ==> 路由路径
@@ -53,60 +54,13 @@ export const constantRoutes: Array<RouteRecordRaw & extendRoute> = [
     name: 'layout',
     component: Layout,
     redirect: '/home',
-    meta: { title: '交易软件用户监测', icon: 'Odometer' },
+    meta: { title: '仪表盘', icon: 'Odometer' },
     children: [
       {
         path: '/home',
-        component: () => import('@/views/monitor/userMonitorPage.vue'),
+        component: () => import('@/views/panel/index.vue'),
         name: 'home',
-        meta: { title: '交易软件用户监测', icon: 'Odometer', breadcrumb: false, role: ['other'] },
-      },
-    ],
-  },
-  {
-    path: '/anonymous',
-    component: Layout,
-    redirect: '/anonymous/searchPage',
-    name: 'searchPage',
-    meta: {
-      title: '反匿名查询',
-      icon: 'CircleCheck',
-    },
-    hidden: true,
-    children: [
-      {
-        path: '/anonymous/searchPage',
-        component: () => import('@/views/anonymous/searchPage.vue'),
-        name: 'searchPage',
-        meta: { title: '反匿名查询', breadcrumb: false, icon: 'CircleCheck' },
-      },
-      {
-        path: '/anonymous/ipSearchPage',
-        component: () => import('@/views/anonymous/ipSearchPage.vue'),
-        name: 'ipSearchPage',
-        meta: { title: 'IP地址查询' },
-        hidden: true,
-      },
-      {
-        path: '/anonymous/nameSearchPage',
-        component: () => import('@/views/anonymous/nameSearchPage.vue'),
-        name: 'nameSearchPage',
-        meta: { title: '昵称查询' },
-        hidden: true,
-      },
-      {
-        path: '/anonymous/infoSearchPage',
-        component: () => import('@/views/anonymous/infoSearchPage.vue'),
-        name: 'infoSearchPage',
-        meta: { title: '实名信息查询' },
-        hidden: true,
-      },
-      {
-        path: '/anonymous/chainSearchPage',
-        component: () => import('@/views/anonymous/chainSearchPage.vue'),
-        name: 'chainSearchPage',
-        meta: { title: '链上地址查询' },
-        hidden: true,
+        meta: { title: '仪表盘', icon: 'Odometer', breadcrumb: false, role: ['other'] },
       },
     ],
   },
@@ -118,7 +72,7 @@ export const constantRoutes: Array<RouteRecordRaw & extendRoute> = [
 export const notFoundRouter = {
   path: '/:pathMatch(.*)',
   name: 'notFound',
-  redirect: '/404',
+  redirect: '/',
 }
 
 const router = createRouter({

@@ -75,8 +75,9 @@
       type: 'warning',
     })
       .then(async () => {
-        await UserStore.logout()
         await router.push({ path: '/login' })
+        await UserStore.logout()
+
         TagsViewStore.clearVisitedView()
         PermissionStore.clearRoutes()
         ElMessage({

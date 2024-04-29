@@ -4,6 +4,7 @@ import { useUserStore } from '@/store/modules/user'
 import { useRouter } from 'vue-router'
 import { useTagsViewStore } from '@/store/modules/tagsView'
 import { usePermissionStore } from '@/store/modules/permission'
+import router from '@/routers'
 // 创建axios实例 进行基本参数配置
 const service = axios.create({
   // 默认请求地址，根据环境的不同可在.env 文件中进行修改
@@ -23,6 +24,8 @@ service.interceptors.request.use(
      */
     const userStore = useUserStore()
     const token: string = userStore.token
+    console.log(token)
+
     // 自定义请求头
     if (token) {
       config.headers['token'] = token
@@ -41,14 +44,13 @@ service.interceptors.response.use(
     if (response.data.data.code == 401) {
       console.log(response)
       const userStore = useUserStore()
-      const router = useRouter()
       const TagsViewStore = useTagsViewStore()
       const PermissionStore = usePermissionStore()
       // Token 失效，执行相应的操作，例如跳转到登录页
       // 这里你可以使用路由进行页面跳转，或者其他逻辑处理
       // 例如使用 element-plus 的 Message 组件显示提示信息
       ElMessage.error('Token 失效，请重新登录')
-      await userStore.logout()
+      // await userStore.logout()
       await router.push({ path: '/login' })
       TagsViewStore.clearVisitedView()
       PermissionStore.clearRoutes()
@@ -62,14 +64,13 @@ service.interceptors.response.use(
       console.log(error)
 
       const userStore = useUserStore()
-      const router = useRouter()
       const TagsViewStore = useTagsViewStore()
       const PermissionStore = usePermissionStore()
       // Token 失效，执行相应的操作，例如跳转到登录页
       // 这里你可以使用路由进行页面跳转，或者其他逻辑处理
       // 例如使用 element-plus 的 Message 组件显示提示信息
       ElMessage.error('Token 失效，请重新登录')
-      await userStore.logout()
+      // await userStore.logout()
       await router.push({ path: '/login' })
       TagsViewStore.clearVisitedView()
       PermissionStore.clearRoutes()

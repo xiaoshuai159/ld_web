@@ -9,8 +9,17 @@
   const chartsRef = ref<HTMLElement | null>()
 
   const options = {
+    title: {
+      text: '漏洞数量趋势变化', // 设置标题文本
+      textStyle: {
+        fontSize: '18',
+        color: '#5fe5ff',
+      },
+      top: '10',
+      left: '10',
+    },
     grid: {
-      top: '10%',
+      top: '19%',
       left: '3%',
       right: '4%',
       bottom: '10%',
@@ -25,7 +34,7 @@
         const tipHtml = `
                      <div class="m-info" style=" opacity: 0.95;font-size: 12px; color: white;" >
                          <div class="title" ></div>
-                         <div class="title" >完成占比${name[0].data}</div>
+                         <div class="title" >漏洞数量：${name[0].data}万</div>
                  </div>`
         return tipHtml
       },
@@ -41,6 +50,11 @@
         lineStyle: {
           color: '#2d5baf',
         },
+      },
+      type: 'value',
+      name: '单位（万）',
+      nameTextStyle: {
+        color: '#58d0fa', // 设置单位名称的字体颜色
       },
     },
     xAxis: {

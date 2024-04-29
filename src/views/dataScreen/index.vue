@@ -2,11 +2,11 @@
   <full-screen-container>
     <div class="m-data-screen">
       <div class="header">
-        <div class="header-bg-title">访问量大数据展示平台</div>
+        <div class="header-bg-title">漏洞利用威胁发现态势平台</div>
         <div class="date">{{ timeDate }} {{ hourTime }} </div>
       </div>
       <div class="center">
-        <div v-for="item in 5" class="item">
+        <!-- <div v-for="item in 4" class="item">
           <div class="item-icon item-icon1">
             <img src="@/assets/image/circle-bg.png" class="circle-bg" />
           </div>
@@ -18,6 +18,70 @@
                 <span class="left">同比昨天</span>
                 <img src="@/assets/image/allow.png" />
                 <span class="right">+78%</span>
+              </div>
+            </div>
+          </div>
+        </div> -->
+        <div class="item">
+          <div class="item-icon item-icon1">
+            <img src="@/assets/image/circle-bg.png" class="circle-bg" />
+          </div>
+          <div class="item-right">
+            <div class="item-right-inner">
+              <div class="text-title">漏洞数量</div>
+              <div class="text-number"><count-to :start-val="0" :end-val="124255" :duration="4000" separator=""></count-to></div>
+              <div class="text-der text-decenter-wrapr">
+                <span class="left">同比昨天</span>
+                <img src="@/assets/image/allow.png" />
+                <span class="right">+14%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon item-icon2">
+            <img src="@/assets/image/circle-bg.png" class="circle-bg" />
+          </div>
+          <div class="item-right">
+            <div class="item-right-inner">
+              <div class="text-title">资产数量</div>
+              <div class="text-number"><count-to :start-val="0" :end-val="34253" :duration="4000" separator=""></count-to></div>
+              <div class="text-der text-decenter-wrapr">
+                <span class="left">同比昨天</span>
+                <img src="@/assets/image/allow.png" />
+                <span class="right">+8%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon item-icon3">
+            <img src="@/assets/image/circle-bg.png" class="circle-bg" />
+          </div>
+          <div class="item-right">
+            <div class="item-right-inner">
+              <div class="text-title">探测脚本数量</div>
+              <div class="text-number"><count-to :start-val="0" :end-val="6285" :duration="4000" separator=""></count-to></div>
+              <div class="text-der text-decenter-wrapr">
+                <span class="left">同比昨天</span>
+                <img src="@/assets/image/allow.png" />
+                <span class="right">+10%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon item-icon4">
+            <img src="@/assets/image/circle-bg.png" class="circle-bg" />
+          </div>
+          <div class="item-right">
+            <div class="item-right-inner">
+              <div class="text-title">任务数量</div>
+              <div class="text-number"><count-to :start-val="0" :end-val="341" :duration="4000" separator=""></count-to></div>
+              <div class="text-der text-decenter-wrapr">
+                <span class="left">同比昨天</span>
+                <img src="@/assets/image/allow.png" />
+                <span class="right">+42%</span>
               </div>
             </div>
           </div>
@@ -50,7 +114,7 @@
   </full-screen-container>
 </template>
 <script lang="ts" setup>
-  import { onBeforeUnmount, onMounted, ref } from 'vue'
+  import { onBeforeUnmount, onMounted, ref, reactive } from 'vue'
   import FullScreenContainer from './components/full-screen-container.vue'
   import CountTo from '@/components/CountTo/index.vue'
   import LineCharts from '@/components/DataScreen/lineEcharts/index.vue'
@@ -58,7 +122,7 @@
   import MigrationCharts from '@/components/DataScreen/migrationEcharts/index.vue'
   import MultilineCharts from '@/components/DataScreen/Multiline/index'
   import PieCharts from '@/components/DataScreen/Pie/index'
-
+  const headerData = reactive([{ text: '漏洞数量', num: '15213012', icon: '' }])
   const timeDate = ref()
   const hourTime = ref()
   const time1 = ref()
