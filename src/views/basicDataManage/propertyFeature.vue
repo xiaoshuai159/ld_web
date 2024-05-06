@@ -46,7 +46,7 @@
     <el-row style="margin-top: 16px">
       <el-col :span="1"></el-col>
       <el-col :span="19">
-        <el-button type="primary" :icon="Plus">新建</el-button>
+        <el-button type="primary" :icon="Plus" @click="xjClick">新建</el-button>
         <el-button>批量删除</el-button>
         <el-button>批量导出</el-button>
       </el-col>
@@ -111,58 +111,106 @@
       </el-col>
       <el-col :span="1"></el-col>
     </el-row>
-    <el-dialog v-model="ckDialogVisible" title="详情信息" width="30%">
-      <div class="ckDialog">
-        <span>特征编号</span><span>{{ curXqData.tzbh }}</span
+    <el-dialog v-model="xqDialogVisible" title="详情信息" width="30%">
+      <div class="xqDialog">
+        <span>特征编号</span><span>{{ curXqData.chara_id }}</span
         ><br />
-        <span>特征名称</span><span>{{ curXqData.tzmc }}</span
+        <span>特征名称</span><span>{{ curXqData.chara_name }}</span
         ><br />
-        <span>特征类型</span><span>{{ curXqData.tzlx }}</span
+        <span>特征类型</span><span>{{ curXqData.chara_type }}</span
         ><br />
         <span>特征评价等级</span
-        ><span> <el-rate v-model="curXqData.tzdjpj" disabled show-score text-color="#ff9900" score-template="{value}星" /> </span><br />
-        <span>特征资产重要等级</span><span>{{ curXqData.xgzczydj }}</span
+        ><span> <el-rate v-model="curXqData.star" disabled show-score text-color="#ff9900" score-template="{value}星" /> </span><br />
+        <span>特征资产重要等级</span><span>{{ curXqData.chara_level }}</span
         ><br />
         <span>特征来源</span><span>{{ curXqData.tzly }}</span
         ><br />
         <span>特征版本</span><span>{{ curXqData.tzbb }}</span
         ><br />
-        <span>特征创建/上传日期</span><span>{{ curXqData.cjsj }}</span
+        <span>特征创建/上传日期</span><span>{{ curXqData.create_time }}</span
         ><br />
         <span>特征最新修改日期</span><span>{{ curXqData.xgrq }}</span
         ><br />
-        <span>特征描述</span><span>{{ curXqData.tzms }}</span>
+        <span>特征描述</span><span>{{ curXqData.description }}</span>
       </div>
     </el-dialog>
-    <!-- <el-dialog v-model="bjDialogVisible" title="编辑信息" width="30%">
-      <div class="bjDialog">
-        <span>特征编号</span><span>{{ curXqData.tzbh }}</span><br>
-        <span>特征名称</span><span>{{ curXqData.tzmc }}</span><br>
-        <span>特征类型</span><span>{{ curXqData.tzlx }}</span><br>
-        <span>特征评价等级</span><span>
-          <el-rate v-model="curXqData.tzdjpj" disabled show-score text-color="#ff9900" score-template="{value}星" />
-        </span><br>
-        <span>特征资产重要等级</span><span>{{ curXqData.xgzczydj }}</span><br>
-        <span>特征来源</span><span>{{ curXqData.tzly }}</span><br>
-        <span>特征版本</span><span>{{ curXqData.tzbb }}</span><br>
-        <span>特征创建/上传日期</span><span>{{ curXqData.cjsj }}</span><br>
-        <span>特征最新修改日期</span><span>{{ curXqData.xgrq }}</span><br>
-        <span>特征描述</span><span>{{ curXqData.tzms }}</span>
-      </div>
+    <el-dialog v-model="xjDialogVisible" title="新建" width="30%">
+      <el-form ref="xjForm" :model="curXjData" :rules="rules" label-width="140px">
+        <el-form-item label="特征名称" prop="chara_name">
+          <el-input v-model="curXjData.chara_name" placeholder="请输入特征名称" style="width: 160px" @keyup.enter="handleSubmit(xjForm)" />
+        </el-form-item>
+        <el-form-item label="特征类型" prop="chara_type">
+          <el-select v-model="curXjData.chara_type" placeholder="请选择" style="width: 160px" @keyup.enter="handleSubmit(xjForm)">
+            <el-option v-for="item in tzlxOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="特征评价等级" prop="star">
+          <el-select v-model="curXjData.star" placeholder="请选择" style="width: 160px" @keyup.enter="handleSubmit(xjForm)">
+            <el-option v-for="item in tzdjOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="相关资产重要等级" prop="chara_level">
+          <el-select v-model="curXjData.chara_level" placeholder="请选择" style="width: 160px" @keyup.enter="handleSubmit(xjForm)">
+            <el-option v-for="item in tzdjOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="特征描述" prop="description">
+          <el-input v-model="curXjData.description" placeholder="请输入特征名称" style="width: 160px" type="textarea" :rows="2" />
+        </el-form-item>
+      </el-form>
       <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="bjDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitForm(ruleFormRef)">确定</el-button>
-      </span>
-    </template>
-    </el-dialog> -->
+        <span class="dialog-footer" style="display: flex; justify-content: flex-end">
+          <el-button type="primary" @click="handleSubmit(xjForm)">确定</el-button>
+          <el-button @click="xjDialogVisible = false">取消</el-button>
+        </span>
+      </template>
+    </el-dialog>
+    <el-dialog v-model="bjDialogVisible" title="编辑" width="30%">
+      <el-form ref="bjForm" :model="curBjData" :rules="rules" label-width="140px">
+        <el-form-item label="特征名称" prop="chara_name">
+          <el-input v-model="curBjData.chara_name" placeholder="请输入特征名称" style="width: 160px" @keyup.enter="handleSubmit(bjForm)" />
+        </el-form-item>
+        <el-form-item label="特征类型" prop="chara_type">
+          <el-select v-model="curBjData.chara_type" placeholder="请选择" style="width: 160px" @keyup.enter="handleSubmit(bjForm)">
+            <el-option v-for="item in tzlxOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="特征评价等级" prop="star">
+          <el-select v-model="curBjData.star" placeholder="请选择" style="width: 160px" @keyup.enter="handleSubmit(bjForm)">
+            <el-option v-for="item in tzdjOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="相关资产重要等级" prop="chara_level">
+          <el-select v-model="curBjData.chara_level" placeholder="请选择" style="width: 160px" @keyup.enter="handleSubmit(bjForm)">
+            <el-option v-for="item in tzdjOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="特征描述" prop="description">
+          <el-input v-model="curBjData.description" placeholder="请输入特征名称" style="width: 160px" type="textarea" :rows="2" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer" style="display: flex; justify-content: flex-end">
+          <el-button type="primary" @click="handleSubmit2(bjForm)">确定</el-button>
+          <el-button @click="bjDialogVisible = false">取消</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 <script lang="ts" setup>
   import { Plus } from '@element-plus/icons-vue'
   import { ref, reactive, onMounted, Ref } from 'vue'
   import service from '@/api/request'
-  let ckDialogVisible = ref(false)
+  import type { FormInstance } from 'element-plus'
+  const rules = ref({
+    chara_name: [{ required: true, message: '请输入特征名称', trigger: 'blur' }],
+    chara_type: [{ required: true, message: '请选择特征类型', trigger: 'change' }],
+    star: [{ required: true, message: '请选择特征评价等级', trigger: 'change' }],
+    chara_level: [{ required: true, message: '请选择相关资产重要等级', trigger: 'change' }],
+  })
+  let xqDialogVisible = ref(false)
+  let xjDialogVisible = ref(false)
   let bjDialogVisible = ref(false)
   const tzbhInput = ref('')
   const tzmcInput = ref('')
@@ -192,36 +240,58 @@
   ])
   let tableData = ref([
     {
-      tzbh: '202112-00084',
-      tzmc: 'wordpress系统特征',
-      tzlx: 'URL特征',
-      cjsj: '2024-01-11 10:56:01',
-      tzdjpj: '4',
-      xgzczydj: '高',
+      chara_id: '202112-00084',
+      chara_name: 'wordpress系统特征',
+      chara_type: 'URL特征',
+      create_time: '2024-01-11 10:56:01',
+      star: '4',
+      chara_level: '高',
       xgrq: '2024-01-12 14:56:01',
       tzly: '资产系统自动导入',
       tzbb: '1.1.1',
-      tzms: '查询语法：url:example',
+      description: '查询语法：url:example',
     },
     {
-      tzbh: '202112-00085',
-      tzmc: 'Excel文件特征',
-      tzlx: 'IP特征',
-      cjsj: '2024-01-01 11:50:01',
-      tzdjpj: '3',
-      xgzczydj: '中',
+      chara_id: '202112-00085',
+      chara_name: 'Excel文件特征',
+      chara_type: 'IP特征',
+      create_time: '2024-01-01 11:50:01',
+      star: '3',
+      chara_level: '中',
       xgrq: '2024-01-02 14:56:01',
       tzly: '资产系统自动导入',
       tzbb: '1.1.3',
-      tzms: '无',
+      description: '无',
     },
   ])
   let curXqData: any = ref({})
   const xqClick = (row) => {
     curXqData.value = row
-    ckDialogVisible.value = true
+    xqDialogVisible.value = true
   }
-
+  const charaTypeOptions = ref([
+    { label: 'URL特征', value: 'URL特征' },
+    { label: 'IP特征', value: 'IP特征' },
+  ])
+  let curXjData: any = ref({
+    chara_name: '',
+    chara_type: '',
+    star: '',
+    chara_level: '',
+    query_info: '',
+    description: '',
+  })
+  let curBjData: any = ref({
+    chara_name: '',
+    chara_type: '',
+    star: '',
+    chara_level: '',
+    query_info: '',
+    description: '',
+  })
+  const xjClick = () => {
+    xjDialogVisible.value = true
+  }
   const pagination = reactive({
     currentPage: 1,
     pageSize: 10,
@@ -280,16 +350,109 @@
     tzdjValue.value = ''
     searchClick()
   }
+  const xjForm = ref<FormInstance>()
+  const bjForm = ref<FormInstance>()
+  const handleSubmit = (formEl: FormInstance | undefined) => {
+    if (!formEl) return
+    // 处理表单提交逻辑，例如提交数据到后端等
+    // 在这里你可以调用 el-form 的 validate() 方法来校验表单
+    // 如果校验通过，再执行后续的逻辑
+    formEl.validate((valid) => {
+      console.log(valid)
 
+      if (valid) {
+        // loading.value = true
+        // // 登录
+        // setTimeout(async () => {
+        //   try {
+        //     await UserStore.login(ruleForm)
+        //     await router.push({
+        //       path: '/',
+        //     })
+        //     ElNotification({
+        //       title: getTimeStateStr(),
+        //       message: '欢迎登录',
+        //       type: 'success',
+        //       duration: 3000,
+        //     })
+        //   } catch (error) {
+        //     console.log('Error:', error.message)
+        //     ElNotification({
+        //       title: getTimeStateStr(),
+        //       message: `${error.message}` + '，请重新输入！',
+        //       type: 'error',
+        //       duration: 3000,
+        //     })
+        //   } finally {
+        //     loading.value = false // 无论成功或失败都将 loading 设为 false
+        //   }
+        // }, 1000)
+      } else {
+        console.log('error submit!')
+        return false
+      }
+    })
+    xjDialogVisible.value = false // 关闭对话框
+  }
+  const handleSubmit2 = (formEl: FormInstance | undefined) => {
+    if (!formEl) return
+    // 处理表单提交逻辑，例如提交数据到后端等
+    // 在这里你可以调用 el-form 的 validate() 方法来校验表单
+    // 如果校验通过，再执行后续的逻辑
+    formEl.validate((valid) => {
+      console.log(valid)
+
+      if (valid) {
+        // loading.value = true
+        // // 登录
+        // setTimeout(async () => {
+        //   try {
+        //     await UserStore.login(ruleForm)
+        //     await router.push({
+        //       path: '/',
+        //     })
+        //     ElNotification({
+        //       title: getTimeStateStr(),
+        //       message: '欢迎登录',
+        //       type: 'success',
+        //       duration: 3000,
+        //     })
+        //   } catch (error) {
+        //     console.log('Error:', error.message)
+        //     ElNotification({
+        //       title: getTimeStateStr(),
+        //       message: `${error.message}` + '，请重新输入！',
+        //       type: 'error',
+        //       duration: 3000,
+        //     })
+        //   } finally {
+        //     loading.value = false // 无论成功或失败都将 loading 设为 false
+        //   }
+        // }, 1000)
+      } else {
+        console.log('error submit!')
+        return false
+      }
+    })
+    xjDialogVisible.value = false // 关闭对话框
+  }
   const del = (row) => {
     console.log(row)
   }
   const editHandler = (row) => {
-    console.log(row)
+    curBjData.value = row
+    bjDialogVisible.value = true
   }
 </script>
 <style lang="scss" scoped>
-  .ckDialog > span:nth-of-type(odd) {
+  .xjDialog > span {
+    display: inline-block;
+    color: #999999;
+    width: 160px;
+    // margin: 12px 0;
+  }
+
+  .xqDialog > span:nth-of-type(odd) {
     display: inline-block;
     color: #999999;
     width: 160px;
