@@ -11,7 +11,7 @@ import taskManage from './modules/taskManage'
 import systemManage from './modules/systemManage'
 import dataScreenRouter from './modules/dataScreen'
 // 异步组件
-export const asyncRoutes = [...basicDataManage, ...taskManage, ...dataScreenRouter]
+export const asyncRoutes = [...dataScreenRouter, ...basicDataManage, ...taskManage]
 
 /**
  * path ==> 路由路径

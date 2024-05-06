@@ -47,8 +47,8 @@
       <el-col :span="1"></el-col>
       <el-col :span="19">
         <el-button type="primary" :icon="Plus" @click="xjClick">新建</el-button>
-        <el-button>批量删除</el-button>
-        <el-button>批量导出</el-button>
+        <el-button @click="multDel">批量删除</el-button>
+        <el-button @click="multPut">批量导出</el-button>
       </el-col>
       <el-col :span="4">
         <div>
@@ -111,7 +111,7 @@
       </el-col>
       <el-col :span="1"></el-col>
     </el-row>
-    <el-dialog v-model="xqDialogVisible" title="详情信息" width="30%">
+    <el-dialog v-model="xqDialogVisible" title="详情信息" width="35%">
       <div class="xqDialog">
         <span>特征编号</span><span>{{ curXqData.chara_id }}</span
         ><br />
@@ -123,39 +123,44 @@
         ><span> <el-rate v-model="curXqData.star" disabled show-score text-color="#ff9900" score-template="{value}星" /> </span><br />
         <span>特征资产重要等级</span><span>{{ curXqData.chara_level }}</span
         ><br />
-        <span>特征来源</span><span>{{ curXqData.tzly }}</span
+        <span>查询语法</span><span>{{ curXqData.query_info }}</span
+        ><br />
+        <!-- <span>特征来源</span><span>{{ curXqData.tzly }}</span
         ><br />
         <span>特征版本</span><span>{{ curXqData.tzbb }}</span
-        ><br />
+        ><br /> -->
         <span>特征创建/上传日期</span><span>{{ curXqData.create_time }}</span
         ><br />
-        <span>特征最新修改日期</span><span>{{ curXqData.xgrq }}</span
-        ><br />
+        <!-- <span>特征最新修改日期</span><span>{{ curXqData.xgrq }}</span
+        ><br /> -->
         <span>特征描述</span><span>{{ curXqData.description }}</span>
       </div>
     </el-dialog>
     <el-dialog v-model="xjDialogVisible" title="新建" width="30%">
       <el-form ref="xjForm" :model="curXjData" :rules="rules" label-width="140px">
         <el-form-item label="特征名称" prop="chara_name">
-          <el-input v-model="curXjData.chara_name" placeholder="请输入特征名称" style="width: 160px" @keyup.enter="handleSubmit(xjForm)" />
+          <el-input v-model="curXjData.chara_name" placeholder="请输入特征名称" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
         </el-form-item>
         <el-form-item label="特征类型" prop="chara_type">
-          <el-select v-model="curXjData.chara_type" placeholder="请选择" style="width: 160px" @keyup.enter="handleSubmit(xjForm)">
+          <el-select v-model="curXjData.chara_type" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
             <el-option v-for="item in tzlxOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="特征评价等级" prop="star">
-          <el-select v-model="curXjData.star" placeholder="请选择" style="width: 160px" @keyup.enter="handleSubmit(xjForm)">
+          <el-select v-model="curXjData.star" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
             <el-option v-for="item in tzdjOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="相关资产重要等级" prop="chara_level">
-          <el-select v-model="curXjData.chara_level" placeholder="请选择" style="width: 160px" @keyup.enter="handleSubmit(xjForm)">
-            <el-option v-for="item in tzdjOptions" :key="item.value" :label="item.label" :value="item.value" />
+          <el-select v-model="curXjData.chara_level" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
+            <el-option v-for="item in zycdOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
+        <el-form-item label="查询语法" prop="query_info">
+          <el-input v-model="curXjData.query_info" placeholder="请输入查询语法" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
+        </el-form-item>
         <el-form-item label="特征描述" prop="description">
-          <el-input v-model="curXjData.description" placeholder="请输入特征名称" style="width: 160px" type="textarea" :rows="2" />
+          <el-input v-model="curXjData.description" placeholder="请输入描述信息" style="width: 220px" type="textarea" :rows="3" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -167,26 +172,32 @@
     </el-dialog>
     <el-dialog v-model="bjDialogVisible" title="编辑" width="30%">
       <el-form ref="bjForm" :model="curBjData" :rules="rules" label-width="140px">
+        <el-form-item label="特征id" prop="chara_name">
+          <el-input v-model="curBjData.chara_id" placeholder="请输入特征id" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
+        </el-form-item>
         <el-form-item label="特征名称" prop="chara_name">
-          <el-input v-model="curBjData.chara_name" placeholder="请输入特征名称" style="width: 160px" @keyup.enter="handleSubmit(bjForm)" />
+          <el-input v-model="curBjData.chara_name" placeholder="请输入特征名称" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
         </el-form-item>
         <el-form-item label="特征类型" prop="chara_type">
-          <el-select v-model="curBjData.chara_type" placeholder="请选择" style="width: 160px" @keyup.enter="handleSubmit(bjForm)">
+          <el-select v-model="curBjData.chara_type" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
             <el-option v-for="item in tzlxOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="特征评价等级" prop="star">
-          <el-select v-model="curBjData.star" placeholder="请选择" style="width: 160px" @keyup.enter="handleSubmit(bjForm)">
+          <el-select v-model="curBjData.star" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
             <el-option v-for="item in tzdjOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="相关资产重要等级" prop="chara_level">
-          <el-select v-model="curBjData.chara_level" placeholder="请选择" style="width: 160px" @keyup.enter="handleSubmit(bjForm)">
-            <el-option v-for="item in tzdjOptions" :key="item.value" :label="item.label" :value="item.value" />
+          <el-select v-model="curBjData.chara_level" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
+            <el-option v-for="item in zycdOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
+        <el-form-item label="查询语法" prop="query_info">
+          <el-input v-model="curBjData.query_info" placeholder="请输入查询语法" style="width: 220px" @keyup.enter="handleSubmit2(xjForm)" />
+        </el-form-item>
         <el-form-item label="特征描述" prop="description">
-          <el-input v-model="curBjData.description" placeholder="请输入特征名称" style="width: 160px" type="textarea" :rows="2" />
+          <el-input v-model="curBjData.description" placeholder="请输入特征名称" style="width: 220px" type="textarea" :rows="3" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -202,12 +213,14 @@
   import { Plus } from '@element-plus/icons-vue'
   import { ref, reactive, onMounted, Ref } from 'vue'
   import service from '@/api/request'
-  import type { FormInstance } from 'element-plus'
+  import { ElMessage, type FormInstance, ElMessageBox } from 'element-plus'
   const rules = ref({
+    chara_id: [{ required: true, message: '请输入特征id', trigger: 'change' }],
     chara_name: [{ required: true, message: '请输入特征名称', trigger: 'blur' }],
     chara_type: [{ required: true, message: '请选择特征类型', trigger: 'change' }],
     star: [{ required: true, message: '请选择特征评价等级', trigger: 'change' }],
     chara_level: [{ required: true, message: '请选择相关资产重要等级', trigger: 'change' }],
+    query_info: [{ required: true, message: '请输入查询语法', trigger: 'change' }],
   })
   let xqDialogVisible = ref(false)
   let xjDialogVisible = ref(false)
@@ -218,9 +231,9 @@
   const tzdjValue = ref('')
   const zycdValue = ref('')
   let zycdOptions = ref([
-    { label: '低', value: 0 },
-    { label: '中', value: 1 },
-    { label: '高', value: 2 },
+    { label: '低', value: '低' },
+    { label: '中', value: '中' },
+    { label: '高', value: '高' },
   ])
   let tzlxOptions = ref([
     { label: '文件特征', value: '文件特征' },
@@ -238,34 +251,11 @@
     { label: '生效', value: 1 },
     { label: '失效', value: 0 },
   ])
-  let tableData = ref([
-    {
-      chara_id: '202112-00084',
-      chara_name: 'wordpress系统特征',
-      chara_type: 'URL特征',
-      create_time: '2024-01-11 10:56:01',
-      star: '4',
-      chara_level: '高',
-      xgrq: '2024-01-12 14:56:01',
-      tzly: '资产系统自动导入',
-      tzbb: '1.1.1',
-      description: '查询语法：url:example',
-    },
-    {
-      chara_id: '202112-00085',
-      chara_name: 'Excel文件特征',
-      chara_type: 'IP特征',
-      create_time: '2024-01-01 11:50:01',
-      star: '3',
-      chara_level: '中',
-      xgrq: '2024-01-02 14:56:01',
-      tzly: '资产系统自动导入',
-      tzbb: '1.1.3',
-      description: '无',
-    },
-  ])
+  let tableData = ref([])
   let curXqData: any = ref({})
   const xqClick = (row) => {
+    console.log(row)
+
     curXqData.value = row
     xqDialogVisible.value = true
   }
@@ -273,7 +263,7 @@
     { label: 'URL特征', value: 'URL特征' },
     { label: 'IP特征', value: 'IP特征' },
   ])
-  let curXjData: any = ref({
+  let curXjData: any = reactive({
     chara_name: '',
     chara_type: '',
     star: '',
@@ -281,7 +271,7 @@
     query_info: '',
     description: '',
   })
-  let curBjData: any = ref({
+  let curBjData: any = reactive({
     chara_name: '',
     chara_type: '',
     star: '',
@@ -322,25 +312,8 @@
       chara_level: zycdValue.value,
     }
     const { data: res } = await service.get('/api/v1/search_chara', { params: reqData })
-    console.log(res)
+    // console.log(res)
     tableData.value = res.data
-    // const queryData = {
-    //   value: curChain.value,
-    //   exchange: zycdValue.value,
-    //   nickname: ldslInput.value,
-    //   name: tzbhInput.value,
-    //   area: tzmcInput.value,
-    //   operator: yysValue.value,
-    // }
-    // const { data: res } = await service.get('/api/v1/query_address', { params: queryData })
-    // if (res.code == 200) {
-    //   tableData.value = res.data
-    //   yysOptions.value = Array.from(new Set(res.data.map((item) => item.operator))).map((operator) => ({
-    //     label: operator,
-    //     value: operator,
-    //   }))
-    //   zycdOptions.value = Array.from(new Set(res.data.map((item) => item.exchange))).map((exchange) => ({ label: exchange, value: exchange }))
-    // }
   }
   const resetClick = () => {
     tzbhInput.value = ''
@@ -352,95 +325,164 @@
   }
   const xjForm = ref<FormInstance>()
   const bjForm = ref<FormInstance>()
+  // 新建
   const handleSubmit = (formEl: FormInstance | undefined) => {
     if (!formEl) return
     // 处理表单提交逻辑，例如提交数据到后端等
     // 在这里你可以调用 el-form 的 validate() 方法来校验表单
     // 如果校验通过，再执行后续的逻辑
-    formEl.validate((valid) => {
-      console.log(valid)
-
+    formEl.validate(async (valid) => {
       if (valid) {
-        // loading.value = true
-        // // 登录
-        // setTimeout(async () => {
-        //   try {
-        //     await UserStore.login(ruleForm)
-        //     await router.push({
-        //       path: '/',
-        //     })
-        //     ElNotification({
-        //       title: getTimeStateStr(),
-        //       message: '欢迎登录',
-        //       type: 'success',
-        //       duration: 3000,
-        //     })
-        //   } catch (error) {
-        //     console.log('Error:', error.message)
-        //     ElNotification({
-        //       title: getTimeStateStr(),
-        //       message: `${error.message}` + '，请重新输入！',
-        //       type: 'error',
-        //       duration: 3000,
-        //     })
-        //   } finally {
-        //     loading.value = false // 无论成功或失败都将 loading 设为 false
-        //   }
-        // }, 1000)
+        const { data: res } = await service.get('/api/v1/search_chara_by_name', { params: { chara_name: curXjData.chara_name } })
+        // console.log(res);
+        if (res.code == 200) {
+          if (res.data.exists == 0) {
+            // 代表特征不重复，可以正常创建 ，走创建接口
+            const formData = {
+              chara_name: curXjData.chara_name,
+              chara_type: curXjData.chara_type,
+              star: curXjData.star,
+              chara_level: curXjData.chara_level,
+              query_info: curXjData.query_info,
+              description: curXjData.description,
+            }
+            // const formData = new FormData()
+            // formData.append('chara_name', curXjData.chara_name)
+            // formData.append('chara_type', curXjData.chara_type)
+            // formData.append('star', curXjData.star)
+            // formData.append('chara_level', curXjData.chara_level)
+            // formData.append('query_info', curXjData.query_info)
+            // formData.append('description', curXjData.description)
+            const { data: res2 } = await service.post('/api/v1/create_chara', formData)
+            console.log(res2)
+            xjDialogVisible.value = false
+            searchClick()
+            ElMessage.success(res2.msg)
+          } else {
+            // 代表特征名称重复
+            ElMessage.error('该特征名称已存在，请重新输入！')
+          }
+        } else {
+          ElMessage.error(res.msg)
+        }
       } else {
         console.log('error submit!')
         return false
       }
     })
-    xjDialogVisible.value = false // 关闭对话框
+    // xjDialogVisible.value = false // 关闭对话框
   }
+  // 编辑
   const handleSubmit2 = (formEl: FormInstance | undefined) => {
     if (!formEl) return
     // 处理表单提交逻辑，例如提交数据到后端等
     // 在这里你可以调用 el-form 的 validate() 方法来校验表单
     // 如果校验通过，再执行后续的逻辑
-    formEl.validate((valid) => {
+    formEl.validate(async (valid) => {
       console.log(valid)
 
       if (valid) {
-        // loading.value = true
-        // // 登录
-        // setTimeout(async () => {
-        //   try {
-        //     await UserStore.login(ruleForm)
-        //     await router.push({
-        //       path: '/',
-        //     })
-        //     ElNotification({
-        //       title: getTimeStateStr(),
-        //       message: '欢迎登录',
-        //       type: 'success',
-        //       duration: 3000,
-        //     })
-        //   } catch (error) {
-        //     console.log('Error:', error.message)
-        //     ElNotification({
-        //       title: getTimeStateStr(),
-        //       message: `${error.message}` + '，请重新输入！',
-        //       type: 'error',
-        //       duration: 3000,
-        //     })
-        //   } finally {
-        //     loading.value = false // 无论成功或失败都将 loading 设为 false
-        //   }
-        // }, 1000)
+        const formData = {
+          chara_id: curBjData.chara_id,
+          chara_name: curBjData.chara_name,
+          chara_type: curBjData.chara_type,
+          star: curBjData.star,
+          chara_level: curBjData.chara_level,
+          query_info: curBjData.query_info,
+          description: curBjData.description,
+        }
+        const { data: res } = await service.post('/api/v1/update_chara', formData)
+        console.log(res)
+        bjDialogVisible.value = false
+
+        searchClick()
+        ElMessage.success(res.msg)
       } else {
         console.log('error submit!')
         return false
       }
     })
-    xjDialogVisible.value = false // 关闭对话框
+    // bjDialogVisible.value = false // 关闭对话框
   }
-  const del = (row) => {
-    console.log(row)
+  const del = async (row) => {
+    const { chara_id } = row
+    const charaIds = [chara_id]
+
+    ElMessageBox.confirm('是否确定删除此条数据?', 'Warning', {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
+      .then(async () => {
+        const { data: res } = await service.post('/api/v1/delete_chara', { chara_id: charaIds })
+        if (res.code == 200) {
+          ElMessage({
+            type: 'success',
+            message: '删除成功',
+          })
+          searchClick()
+        }
+      })
+      .catch(() => {
+        ElMessage({
+          type: 'info',
+          message: '已取消',
+        })
+      })
+  }
+  const multDel = async () => {
+    // const charaIds = multipleSelection
+    // console.log(multipleSelection.value);
+    const chara_id = multipleSelection.value.map((item) => item.chara_id)
+    ElMessageBox.confirm('是否确定删除选中数据?', 'Warning', {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
+      .then(async () => {
+        const { data: res } = await service.post('/api/v1/delete_chara', { chara_id })
+        if (res.code == 200) {
+          ElMessage({
+            type: 'success',
+            message: '删除成功',
+          })
+          searchClick()
+        }
+      })
+      .catch(() => {
+        ElMessage({
+          type: 'info',
+          message: '已取消',
+        })
+      })
+  }
+  const multPut = () => {
+    const chara_id = multipleSelection.value.map((item) => item.chara_id)
+    console.log(chara_id)
+
+    service({
+      method: 'post',
+      url: '/api/v1/export_chara',
+      data: { chara_id },
+      responseType: 'blob',
+    })
+      .then(function (res) {
+        let blob = new Blob([res.data]) // { type: "application/vnd.ms-excel" }
+        let url = window.URL.createObjectURL(blob) // 创建一个临时的url指向blob对象
+        // 创建url之后可以模拟对此文件对象的一系列操作，例如：预览、下载
+        let a = document.createElement('a')
+        a.href = url
+        a.download = '表格.csv'
+        a.click()
+        // 释放这个临时的对象url
+        window.URL.revokeObjectURL(url)
+      })
+      .catch(function (res) {
+        console.log('error', res)
+      })
   }
   const editHandler = (row) => {
-    curBjData.value = row
+    curBjData = row
     bjDialogVisible.value = true
   }
 </script>
@@ -448,14 +490,14 @@
   .xjDialog > span {
     display: inline-block;
     color: #999999;
-    width: 160px;
+    width: 220px;
     // margin: 12px 0;
   }
 
   .xqDialog > span:nth-of-type(odd) {
     display: inline-block;
     color: #999999;
-    width: 160px;
+    width: 220px;
     margin: 12px 0;
   }
 

@@ -24,7 +24,7 @@ service.interceptors.request.use(
      */
     const userStore = useUserStore()
     const token: string = userStore.token
-    console.log(token)
+    // console.log(token)
 
     // 自定义请求头
     if (token) {

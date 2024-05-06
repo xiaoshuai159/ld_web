@@ -81,8 +81,8 @@
 
   // 表单数据
   const ruleForm = reactive({
-    username: '',
-    passwd: '',
+    username: 'admin',
+    passwd: 'admin@123.com',
     captcha: '',
   })
   let captchaImgUrl = ref('/api/v1/verify_code?time' + new Date())
