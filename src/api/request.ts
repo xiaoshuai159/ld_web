@@ -41,6 +41,10 @@ service.interceptors.request.use(
 //  response interceptor 接口响应拦截
 service.interceptors.response.use(
   async (response: AxiosResponse) => {
+    if (response.headers['content-type'] === 'application/octet-stream') {
+      return response
+    }
+
     if (response.data.data.code == 401) {
       console.log(response)
       const userStore = useUserStore()
@@ -55,6 +59,7 @@ service.interceptors.response.use(
       TagsViewStore.clearVisitedView()
       PermissionStore.clearRoutes()
     }
+
     // 直接返回res，当然你也可以只返回res.data
     // 系统如果有自定义code也可以在这里处理
     return response

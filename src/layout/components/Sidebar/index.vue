@@ -6,10 +6,11 @@
         :default-active="activeMenu"
         background-color="#304156"
         text-color="#bfcbd9"
-        :unique-opened="SettingStore.themeConfig.uniqueOpened"
+        :unique-opened="false"
         :collapse-transition="false"
         class="el-menu-vertical-demo"
         :collapse="isCollapse"
+        :default-openeds="defaultOpeneds"
       >
         <SubItem v-for="route in permission_routes" :key="route.path" :item="route" />
       </el-menu>
@@ -44,6 +45,10 @@
       return meta.activeMenu
     }
     return path
+  })
+  // 默认展开的菜单项
+  const defaultOpeneds = computed(() => {
+    return PermissionStore.permission_routes.map((route) => route.path)
   })
 </script>
 

@@ -207,10 +207,24 @@
         </span>
       </template>
     </el-dialog>
+    <el-dialog v-model="wjDialogVisible" width="30%">
+      <div style="text-align: center; height: 140px; line-height: 140px; border: 1px #dddddd Dashed; border-radius: 5px">
+        <el-button :icon="Upload" @click="wjClick">上传文件</el-button>
+        <span style="margin: 0 10px 0 16px; color: #b3b3b3">/</span>
+        <el-button link type="info" @click="dtClick">手动输入（单条创建）</el-button>
+      </div>
+      <div style="display: flex; justify-content: center; margin-top: 10px">
+        <el-icon color="#1890ff" size="20">
+          <InfoFilled />
+        </el-icon>
+        <span style="color: #b3b3b3">请上传json文件，大小在60M以内，内容格式为</span>
+      </div>
+    </el-dialog>
+    <input ref="fileInput" type="file" style="display: none" @change="handleFileChange" />
   </div>
 </template>
 <script lang="ts" setup>
-  import { Plus } from '@element-plus/icons-vue'
+  import { Plus, Upload } from '@element-plus/icons-vue'
   import { ref, reactive, onMounted, Ref } from 'vue'
   import service from '@/api/request'
   import { ElMessage, type FormInstance, ElMessageBox } from 'element-plus'
@@ -225,6 +239,7 @@
   let xqDialogVisible = ref(false)
   let xjDialogVisible = ref(false)
   let bjDialogVisible = ref(false)
+  let wjDialogVisible = ref(false)
   const tzbhInput = ref('')
   const tzmcInput = ref('')
   const tzlxValue = ref('')
@@ -236,9 +251,9 @@
     { label: '高', value: '高' },
   ])
   let tzlxOptions = ref([
-    { label: '文件特征', value: '文件特征' },
-    { label: '网路特征', value: '网路特征' },
-    { label: '进程特征', value: '进程特征' },
+    { label: 'URL特征', value: 'URL特征' },
+    { label: 'IP特征', value: 'IP特征' },
+    { label: '端口特征', value: '端口特征' },
   ])
   let tzdjOptions = ref([
     { label: 1, value: 1 },
@@ -279,7 +294,39 @@
     query_info: '',
     description: '',
   })
+  // 创建 ref 引用
+  const fileInputRef = ref(null)
+  // 保存用户选择的文件
+  let file = null
+  const wjClick = () => {
+    fileInputRef.value.click()
+  }
+  const handleFileChange = (event) => {
+    file = event.target.files[0]
+    const formData = new FormData()
+    formData.append('file', file)
+    service
+      .post('/api/v1/upload_asset', {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .then(({ data: res }) => {
+        console.log(res)
+        if (res.code == 200) {
+          ElMessage.success('上传成功')
+          wjDialogVisible.value = false
+        } else {
+          ElMessage.error(res.msg)
+        }
+      })
+  }
   const xjClick = () => {
+    wjDialogVisible.value = true
+    // xjDialogVisible.value = true
+  }
+  const dtClick = () => {
+    wjDialogVisible.value = false
     xjDialogVisible.value = true
   }
   const pagination = reactive({
@@ -303,6 +350,7 @@
   }
   onMounted(() => {
     searchClick()
+    fileInputRef.value = document.querySelector('input[type=file]')
   })
   const searchClick = async () => {
     const reqData = {
@@ -346,13 +394,6 @@
               query_info: curXjData.query_info,
               description: curXjData.description,
             }
-            // const formData = new FormData()
-            // formData.append('chara_name', curXjData.chara_name)
-            // formData.append('chara_type', curXjData.chara_type)
-            // formData.append('star', curXjData.star)
-            // formData.append('chara_level', curXjData.chara_level)
-            // formData.append('query_info', curXjData.query_info)
-            // formData.append('description', curXjData.description)
             const { data: res2 } = await service.post('/api/v1/create_chara', formData)
             console.log(res2)
             xjDialogVisible.value = false
@@ -370,7 +411,6 @@
         return false
       }
     })
-    // xjDialogVisible.value = false // 关闭对话框
   }
   // 编辑
   const handleSubmit2 = (formEl: FormInstance | undefined) => {
@@ -467,12 +507,13 @@
       responseType: 'blob',
     })
       .then(function (res) {
+        const contentDisposition = res.headers['content-disposition']
+        const fileName = contentDisposition.split('filename=')[1].trim()
         let blob = new Blob([res.data]) // { type: "application/vnd.ms-excel" }
         let url = window.URL.createObjectURL(blob) // 创建一个临时的url指向blob对象
-        // 创建url之后可以模拟对此文件对象的一系列操作，例如：预览、下载
         let a = document.createElement('a')
         a.href = url
-        a.download = '表格.csv'
+        a.download = fileName
         a.click()
         // 释放这个临时的对象url
         window.URL.revokeObjectURL(url)
@@ -481,6 +522,7 @@
         console.log('error', res)
       })
   }
+
   const editHandler = (row) => {
     curBjData = row
     bjDialogVisible.value = true

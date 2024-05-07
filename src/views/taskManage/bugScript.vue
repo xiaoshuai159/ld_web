@@ -7,15 +7,12 @@
         <el-col :span="2"></el-col>
         <el-col :span="22">
           <div style="display: inline-block">
-            <span>漏洞名称：</span>
-            <el-input v-model="ldmcInput" style="width: 220px" placeholder="请输入" />
-            <span style="margin-left: 10px">漏洞类型：</span>
+            <span>脚本名称：</span>
+            <el-input v-model="jbmcInput" style="width: 220px" placeholder="请输入" />
+            <span style="margin-left: 10px">脚本哈希：</span>
+            <el-input v-model="jbhxInput" style="width: 220px" placeholder="请输入" />
+            <span style="margin-left: 10px">脚本类型：</span>
             <el-input v-model="ldlxInput" style="width: 220px" placeholder="请输入" />
-
-            <span style="margin-left: 10px">漏洞等级：</span>
-            <el-select v-model="lddjValue" placeholder="请选择" style="width: 220px">
-              <el-option v-for="item in lddjOptions" :key="item.value" :label="item.label" :value="item.value" />
-            </el-select>
           </div>
         </el-col>
       </el-row>
@@ -26,11 +23,15 @@
           <div>
             <span>漏洞数量：</span>
             <el-input v-model="ldslInput" style="width: 220px" placeholder="请输入" />
+            <span style="margin-left: 10px">漏洞等级：</span>
+            <el-select v-model="lddjValue" placeholder="请选择" style="width: 220px">
+              <el-option v-for="item in lddjOptions" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
             <!-- <span style="margin-left: 10px">运营商：</span>
             <el-select v-model="yysValue" placeholder="请选择" style="width: 220px">
               <el-option v-for="item in yysOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select> -->
-            <span style="margin-left: 10px">日期选择：</span>
+            <!-- <span style="margin-left: 10px">日期选择：</span>
             <el-date-picker
               v-model="dateValue"
               type="daterange"
@@ -38,7 +39,7 @@
               start-placeholder="开始日期"
               end-placeholder="结束日期"
               style="transform: translateY(2px)"
-            />
+            /> -->
           </div>
         </el-col>
       </el-row>
@@ -115,10 +116,12 @@
   import { ref, reactive, onBeforeMount, Ref } from 'vue'
   import service from '@/api/request'
   const dateValue = ref('')
-  const ldmcInput = ref('')
+  const jbmcInput = ref('')
   const ldslInput = ref('')
   const ldlxInput = ref('')
+  const jbhxInput = ref('')
   const yysValue = ref('')
+
   let yysOptions = ref([])
   const lddjValue = ref('')
   let lddjOptions = ref([
@@ -153,7 +156,7 @@
     //   value: curChain.value,
     //   exchange: lddjValue.value,
     //   nickname: ldslInput.value,
-    //   name: ldmcInput.value,
+    //   name: jbmcInput.value,
     //   area: ldlxInput.value,
     //   operator: yysValue.value,
     // }
@@ -168,7 +171,7 @@
     // }
   }
   const resetClick = () => {
-    ldmcInput.value = ''
+    jbmcInput.value = ''
     ldlxInput.value = ''
     lddjValue.value = ''
     ldslInput.value = ''
