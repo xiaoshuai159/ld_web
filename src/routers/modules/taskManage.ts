@@ -14,12 +14,6 @@ const taskManageRouter = [
     },
     children: [
       {
-        path: '/taskManage/bugScript',
-        component: () => import('@/views/taskManage/bugScript.vue'),
-        name: 'bugScript',
-        meta: { title: '漏洞探测脚本管理', icon: 'Cpu', keepAlive: true },
-      },
-      {
         path: '/taskManage/taskConfig',
         component: () => import('@/views/taskManage/taskConfig.vue'),
         name: 'taskConfig',

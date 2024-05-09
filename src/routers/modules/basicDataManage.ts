@@ -31,6 +31,12 @@ const basicDataManageRouter = [
         name: 'bugFeature',
         meta: { title: '漏洞攻击特征管理', keepAlive: true, icon: 'Film' },
       },
+      {
+        path: '/taskManage/bugScript',
+        component: () => import('@/views/taskManage/bugScript.vue'),
+        name: 'bugScript',
+        meta: { title: '漏洞探测脚本管理', icon: 'Cpu', keepAlive: true },
+      },
     ],
   },
 ]

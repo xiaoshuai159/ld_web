@@ -125,14 +125,8 @@
         ><br />
         <span>查询语法</span><span>{{ curXqData.query_info }}</span
         ><br />
-        <!-- <span>特征来源</span><span>{{ curXqData.tzly }}</span
-        ><br />
-        <span>特征版本</span><span>{{ curXqData.tzbb }}</span
-        ><br /> -->
         <span>特征创建/上传日期</span><span>{{ curXqData.create_time }}</span
         ><br />
-        <!-- <span>特征最新修改日期</span><span>{{ curXqData.xgrq }}</span
-        ><br /> -->
         <span>特征描述</span><span>{{ curXqData.description }}</span>
       </div>
     </el-dialog>
@@ -471,8 +465,6 @@
       })
   }
   const multDel = async () => {
-    // const charaIds = multipleSelection
-    // console.log(multipleSelection.value);
     const chara_id = multipleSelection.value.map((item) => item.chara_id)
     ElMessageBox.confirm('是否确定删除选中数据?', 'Warning', {
       confirmButtonText: '确认',
