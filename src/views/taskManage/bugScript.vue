@@ -9,12 +9,14 @@
           <div style="display: inline-block">
             <span>脚本名称：</span>
             <el-input v-model="jbmcInput" style="width: 220px" placeholder="请输入" />
-            <span style="margin-left: 10px">脚本哈希：</span>
-            <el-input v-model="jbhxInput" style="width: 220px" placeholder="请输入" />
+            <!-- <span style="margin-left: 10px">脚本哈希：</span>
+            <el-input v-model="jbhxInput" style="width: 220px" placeholder="请输入" /> -->
             <span style="margin-left: 10px">脚本类型：</span>
             <el-select v-model="jblxValue" placeholder="请选择" style="width: 220px">
               <el-option v-for="item in jblxOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
+            <span style="margin-left: 10px">漏洞名称：</span>
+            <el-input v-model="ldmcInput" style="width: 220px" placeholder="请输入" />
           </div>
         </el-col>
       </el-row>
@@ -23,14 +25,12 @@
         <el-col :span="2"></el-col>
         <el-col :span="18">
           <div>
-            <span>漏洞名称：</span>
-            <el-input v-model="ldmcInput" style="width: 220px" placeholder="请输入" />
-            <span style="margin-left: 10px">漏洞等级：</span>
+            <span>漏洞等级：</span>
             <el-select v-model="lddjValue" placeholder="请选择" style="width: 220px">
               <el-option v-for="item in lddjOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
             <span style="margin-left: 10px">漏洞类型：</span>
-            <el-select v-model="ldlxValue" placeholder="请选择" style="width: 220px">
+            <el-select v-model="vul_type" placeholder="请选择" style="width: 220px">
               <el-option v-for="item in ldlxOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </div>
@@ -103,34 +103,73 @@
     </el-row>
     <el-dialog v-model="xqDialogVisible" title="详情信息" width="35%">
       <div class="xqDialog">
-        <span>特征编号</span><span>{{ curXqData.poc_id }}</span
+        <!-- <span>特征编号</span><span>{{ curXqData.poc_id }}</span
+        ><br /> -->
+        <span>脚本名称</span><span>{{ curXqData.poc_name }}</span
         ><br />
-        <span>特征名称</span><span>{{ curXqData.poc_name }}</span
+        <span>脚本类型</span><span>{{ curXqData.poc_type }}</span
         ><br />
-        <span>特征类型</span><span>{{ curXqData.poc_type }}</span
+        <!-- <span>漏洞等级</span><span> <el-rate v-model="curXqData.star" disabled show-score text-color="#ff9900"
+            score-template="{value}星" /> </span><br /> -->
+        <span>创建时间</span><span>{{ curXqData.create_time }}</span
         ><br />
-        <span>特征评价等级</span
-        ><span> <el-rate v-model="curXqData.star" disabled show-score text-color="#ff9900" score-template="{value}星" /> </span><br />
-        <span>特征资产重要等级</span><span>{{ curXqData.poc_level }}</span
+        <span>更新时间</span><span>{{ curXqData.update_time }}</span
         ><br />
-        <span>查询语法</span><span>{{ curXqData.query_info }}</span
+        <span>相关漏洞数量</span><span>{{ curXqData.count }}</span
         ><br />
-        <span>特征创建/上传日期</span><span>{{ curXqData.create_time }}</span
+        <span>漏洞等级</span><span>{{ curXqData.level }}</span
         ><br />
-        <span>特征描述</span><span>{{ curXqData.description }}</span>
+        <span>漏洞名称</span><span>{{ curXqData.vul_name }}</span
+        ><br />
+        <span>漏洞类型</span><span>{{ curXqData.vul_type }}</span
+        ><br />
+        <span>相关漏洞数量</span><span>{{ curXqData.count }}</span
+        ><br />
+        <span>脚本</span><span style="color: blue; cursor: pointer" @click="downloadFile">下载</span>
+        <!-- <span>脚本类型</span><span>{{ curXqData.poc_type }}</span
+        ><br /> -->
       </div>
     </el-dialog>
     <el-dialog v-model="xjDialogVisible" title="新建" width="30%">
       <el-form ref="xjForm" :model="curXjData" :rules="rules" label-width="140px">
-        <el-form-item label="漏洞类型" prop="ldlxValue">
-          <el-select v-model="curXjData.ldlxValue" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
+        <el-form-item label="脚本名称" prop="poc_name">
+          <el-input
+            v-model="curXjData.poc_name"
+            placeholder="请输入漏洞名称"
+            style="width: 220px"
+            @keyup.enter="handleSubmit(xjForm)"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="脚本类型" prop="poc_type">
+          <el-select v-model="curXjData.poc_type" placeholder="请选择脚本类型" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
             <el-option v-for="item in ldlxOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="漏洞等级" prop="lddjValue">
-          <el-select v-model="curXjData.lddjValue" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
+        <el-form-item label="漏洞等级" prop="level">
+          <el-select v-model="curXjData.level" placeholder="请选择等级" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
+            <el-option v-for="item in lddjOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="漏洞名称" prop="vul_name">
+          <el-input
+            v-model="curXjData.vul_name"
+            placeholder="请输入漏洞名称"
+            style="width: 220px"
+            @keyup.enter="handleSubmit(xjForm)"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="漏洞类型" prop="vul_type">
+          <el-select v-model="curXjData.vul_type" placeholder="请选择漏洞类型" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
             <el-option v-for="item in ldlxOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
+        </el-form-item>
+        <el-form-item label="相关漏洞数量" prop="count">
+          <el-input
+            v-model="curXjData.count"
+            placeholder="请输入相关漏洞数量"
+            style="width: 220px"
+            @keyup.enter="handleSubmit(xjForm)"
+          ></el-input>
         </el-form-item>
         <el-form-item label="上传文件">
           <el-upload v-model:file-list="fileList" style="width: 220px" class="upload-demo" drag action="#" :auto-upload="false" :limit="1">
@@ -151,26 +190,47 @@
     </el-dialog>
     <el-dialog v-model="bjDialogVisible" title="编辑" width="30%">
       <el-form ref="bjForm" :model="curBjData" :rules="rules" label-width="140px">
-        <el-form-item label="脚本名称" prop="jbmcInput">
-          <el-input v-model="curBjData.jbmcInput" placeholder="请输入脚本名称" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
+        <el-form-item label="脚本名称" prop="poc_name">
+          <el-input
+            v-model="curBjData.poc_name"
+            placeholder="请输入漏洞名称"
+            style="width: 220px"
+            @keyup.enter="handleSubmit2(bjForm)"
+          ></el-input>
         </el-form-item>
         <el-form-item label="脚本类型" prop="poc_type">
-          <el-select v-model="curBjData.ldlxValue" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
+          <el-select v-model="curBjData.poc_type" placeholder="请选择脚本类型" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
             <el-option v-for="item in ldlxOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="漏洞类型" prop="ldlxValue">
-          <el-select v-model="curBjData.ldlxValue" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
+        <el-form-item label="漏洞等级" prop="level">
+          <el-select v-model="curBjData.level" placeholder="请选择等级" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
+            <el-option v-for="item in lddjOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="漏洞名称" prop="vul_name">
+          <el-input
+            v-model="curBjData.vul_name"
+            placeholder="请输入漏洞名称"
+            style="width: 220px"
+            @keyup.enter="handleSubmit2(bjForm)"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="漏洞类型" prop="vul_type">
+          <el-select v-model="curBjData.vul_type" placeholder="请选择漏洞类型" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
             <el-option v-for="item in ldlxOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="漏洞等级" prop="lddjValue">
-          <el-select v-model="curBjData.lddjValue" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
-            <el-option v-for="item in ldlxOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
+        <el-form-item label="相关漏洞数量" prop="count">
+          <el-input
+            v-model="curBjData.count"
+            placeholder="请输入相关漏洞数量"
+            style="width: 220px"
+            @keyup.enter="handleSubmit2(bjForm)"
+          ></el-input>
         </el-form-item>
         <el-form-item label="上传文件">
-          <el-upload v-model:file-list="fileList2" style="width: 220px" class="upload-demo" drag action="#" :auto-upload="false" :limit="1">
+          <el-upload v-model:file-list="fileList" style="width: 220px" class="upload-demo" drag action="#" :auto-upload="false" :limit="1">
             <el-icon class="el-icon--upload"><upload-filled /></el-icon>
             <div class="el-upload__text"> 点击或将文件拖拽到这里<em>上传</em> </div>
             <template #tip>
@@ -196,7 +256,7 @@
         <el-icon color="#1890ff" size="20">
           <InfoFilled />
         </el-icon>
-        <span style="color: #b3b3b3">请上传json文件，大小在60M以内，内容格式为</span>
+        <span style="color: #b3b3b3">请上传csv文件，大小在60M以内</span>
       </div>
     </el-dialog>
     <input ref="fileInput" type="file" style="display: none" @change="handleFileChange" />
@@ -211,14 +271,17 @@
   const fileList2 = ref<UploadUserFile[]>([])
   let curXjData: any = reactive({})
   let curBjData: any = reactive({})
-  let curXqData: any = reactive({})
+  let curXqData: any = ref({})
   let xqDialogVisible = ref(false)
   let bjDialogVisible = ref(false)
   const rules = ref({
-    poc_name: [{ required: true, message: '请输入特征名称', trigger: 'blur' }],
-    poc_type: [{ required: true, message: '请选择特征类型', trigger: 'change' }],
-    ldlxValue: [{ required: true, message: '请选择漏洞类型', trigger: 'change' }],
-    lddjValue: [{ required: true, message: '请选择漏洞等级', trigger: 'change' }],
+    poc_name: [{ required: true, message: '请输入脚本名称', trigger: 'blur' }],
+    poc_type: [{ required: true, message: '请选择脚本类型', trigger: 'change' }],
+    level: [{ required: true, message: '请选择等级', trigger: 'change' }],
+    vul_name: [{ required: true, message: '请选择漏洞名称', trigger: 'change' }],
+    vul_type: [{ required: true, message: '请选择漏洞类型', trigger: 'change' }],
+    count: [{ required: true, message: '请输入相关漏洞数量', trigger: 'change' }],
+    file: [{ required: true, message: '请选择文件', trigger: 'change' }],
   })
   const jbmcInput = ref('')
   const ldmcInput = ref('')
@@ -234,18 +297,17 @@
   let yysOptions = ref([])
   const lddjValue = ref('')
   let lddjOptions = ref([
-    { label: '1', value: 1 },
-    { label: '2', value: 2 },
-    { label: '3', value: 3 },
-    { label: '4', value: 4 },
-    { label: '5', value: 5 },
+    { label: '低', value: 0 },
+    { label: '中', value: 1 },
+    { label: '高', value: 2 },
+    { label: '严', value: 3 },
   ])
-  const ldlxValue = ref('')
+  const vul_type = ref('')
   const ldlxOptions = ref([
     { label: '通用型漏洞', value: '通用型漏洞' },
     { label: '事件型漏洞', value: '事件型漏洞' },
   ])
-  let tableData = ref([{}])
+  let tableData = ref([{}, {}])
   let curChain = ref('')
   const pagination = reactive({
     currentPage: 1,
@@ -272,7 +334,7 @@
       poc_hash: jbhxInput.value,
       poc_type: jblxValue.value,
       level: lddjValue.value,
-      vul_type: ldlxValue.value,
+      vul_type: vul_type.value,
       vul_name: ldmcInput.value,
     }
     const { data: res } = await service.get('/api/v1/search_poc', { params: queryData })
@@ -285,7 +347,7 @@
     jbhxInput.value = ''
     jblxValue.value = ''
     lddjValue.value = ''
-    ldlxValue.value = ''
+    vul_type.value = ''
     ldmcInput.value = ''
     searchClick()
   }
@@ -295,6 +357,8 @@
   })
   const xqClick = (row) => {
     console.log(row)
+    curXqData = row
+    xqDialogVisible.value = true
   }
   // 删除 start ----------------------
   const del = async (row) => {
@@ -423,23 +487,21 @@
     // 如果校验通过，再执行后续的逻辑
     formEl.validate(async (valid) => {
       if (valid) {
-        const { data: res } = await service.get('/api/v1/search_poc_by_name', { params: { poc_name: curXjData.poc_name } })
+        const { data: res } = await service.get('/api/v1/select_poc_by_name', { params: { poc_name: curXjData.poc_name } })
         // console.log(res);
         if (res.code == 200) {
           if (res.data.exists == 0) {
             // 代表特征不重复，可以正常创建 ，走创建接口
+            console.log(curXjData)
+
             const formData = new FormData()
             formData.append('file', fileList.value[0].raw)
-            formData.append('vul_type', curXjData.ldlxValue)
-            formData.append('level', curXjData.lddjValue)
-            // const formData = {
-            //   poc_name: curXjData.poc_name,
-            //   poc_type: curXjData.poc_type,
-            //   star: curXjData.star,
-            //   poc_level: curXjData.poc_level,
-            //   query_info: curXjData.query_info,
-            //   description: curXjData.description,
-            // }
+            formData.append('vul_name', curXjData.vul_name)
+            formData.append('vul_type', curXjData.vul_type)
+            formData.append('level', curXjData.level)
+            formData.append('poc_name', curXjData.poc_name)
+            formData.append('poc_type', curXjData.poc_type)
+            formData.append('count', curXjData.count)
             const { data: res2 } = await service.post('/api/v1/create_poc', formData)
             console.log(res2)
             xjDialogVisible.value = false
@@ -473,7 +535,7 @@
       if (valid) {
         const formData = new FormData()
         formData.append('file', fileList.value[0].raw)
-        formData.append('vul_type', curXjData.ldlxValue)
+        formData.append('vul_type', curXjData.vul_type)
         formData.append('level', curXjData.lddjValue)
         const { data: res } = await service.post('/api/v1/update_poc', formData)
         console.log(res)
@@ -488,8 +550,45 @@
     })
     // bjDialogVisible.value = false // 关闭对话框
   }
+  const downloadFile = () => {
+    // window.location.href = curXqData.file_url
+    service({
+      method: 'post',
+      url: curXqData.value.file_url,
+      responseType: 'blob',
+    })
+      .then(function (res) {
+        const contentDisposition = res.headers['content-disposition']
+        const fileName = contentDisposition.split('filename=')[1].trim()
+        let blob = new Blob([res.data]) // { type: "application/vnd.ms-excel" }
+        let url = window.URL.createObjectURL(blob) // 创建一个临时的url指向blob对象
+        let a = document.createElement('a')
+        a.href = url
+        a.download = fileName
+        a.click()
+        // 释放这个临时的对象url
+        window.URL.revokeObjectURL(url)
+      })
+      .catch(function (res) {
+        console.log('error', res)
+      })
+  }
 </script>
 <style lang="scss" scoped>
+  .xjDialog > span {
+    display: inline-block;
+    color: #999999;
+    width: 220px;
+    // margin: 12px 0;
+  }
+
+  .xqDialog > span:nth-of-type(odd) {
+    display: inline-block;
+    color: #999999;
+    width: 220px;
+    margin: 12px 0;
+  }
+
   .my-header {
     font-size: 18px;
     font-weight: 600;

@@ -47,7 +47,7 @@
         <el-button @click="multPut">批量导出</el-button>
       </el-col>
       <el-col :span="10">
-        <el-input v-model="searchInput" style="width: 18vw" placeholder="请输入关键字" :suffix-icon="Search"></el-input>
+        <!-- <el-input v-model="searchInput" style="width: 18vw" placeholder="请输入关键字" :suffix-icon="Search"></el-input> -->
       </el-col>
       <el-col :span="4">
         <div>
@@ -64,6 +64,7 @@
       <el-col :span="22">
         <div class="tableClass">
           <el-table
+            v-loading="loading"
             :data="tableData.slice((pagination.currentPage - 1) * pagination.pageSize, pagination.currentPage * pagination.pageSize)"
             style="width: 100%"
             @selection-change="handleSelectionChange"
@@ -133,13 +134,16 @@
         <el-form-item label="CNVD/CVE编号" prop="c_id">
           <el-input v-model="curXjData.c_id" placeholder="请输入CNVD/CVE编号" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
         </el-form-item>
-        <el-form-item label="特征名称" prop="vul_name">
-          <el-input v-model="curXjData.vul_name" placeholder="请输入特征名称" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
+        <el-form-item label="特征名称" prop="chara_name">
+          <el-input v-model="curXjData.chara_name" placeholder="请输入特征名称" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
         </el-form-item>
         <el-form-item label="评价星级" prop="star">
           <el-select v-model="curXjData.star" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
             <el-option v-for="item in xjOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
+        </el-form-item>
+        <el-form-item label="首次上报时间" prop="first_time">
+          <el-date-picker v-model="curXjData.first_time" type="date" placeholder="请选择" />
         </el-form-item>
         <el-form-item label="相关漏洞重要等级" prop="vul_level">
           <el-select v-model="curXjData.vul_level" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
@@ -184,12 +188,12 @@
         </el-form-item>
         <el-form-item label="评价星级" prop="star">
           <el-select v-model="curBjData.star" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
-            <el-option v-for="item in xglddjOptions" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in xjOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="相关漏洞重要等级" prop="vul_level">
           <el-select v-model="curBjData.vul_level" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
-            <el-option v-for="item in xjOptions" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in xglddjOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="相关漏洞类型" prop="vul_type">
@@ -226,7 +230,9 @@
         <el-icon color="#1890ff" size="20">
           <InfoFilled />
         </el-icon>
-        <span style="color: #b3b3b3">请上传json文件，大小在60M以内，内容格式为</span>
+        <span style="color: #b3b3b3"
+          >请上传csv文件，大小在60M以内，点击<span style="color: blue; cursor: pointer" @click="downloadTemplate">下载模板</span></span
+        >
       </div>
     </el-dialog>
     <input ref="fileInput" type="file" style="display: none" @change="handleFileChange" />
@@ -238,6 +244,7 @@
   import { Search } from '@element-plus/icons-vue'
   import { ElMessage, type FormInstance, ElMessageBox } from 'element-plus'
   import service from '@/api/request'
+  let loading = ref(false)
   const searchInput = ref('')
   const gjtzbmInput = ref('')
   const tzbhInput = ref('')
@@ -251,30 +258,31 @@
   let bjDialogVisible = ref(false)
   let wjDialogVisible = ref(false)
   let xjOptions = ref([
-    { label: '低', value: 0 },
-    { label: '中', value: 1 },
-    { label: '高', value: 2 },
-    { label: '严', value: 3 },
-  ])
-  let xgldlxOptions = ref([
-    { label: '事件型漏洞', value: '事件型漏洞' },
-    { label: '通用型漏洞', value: '通用型漏洞' },
-  ])
-  let xglddjOptions = ref([
     { label: 1, value: 1 },
     { label: 2, value: 2 },
     { label: 3, value: 3 },
     { label: 4, value: 4 },
     { label: 5, value: 5 },
   ])
+  let xgldlxOptions = ref([
+    { label: '事件型漏洞', value: '事件型漏洞' },
+    { label: '通用型漏洞', value: '通用型漏洞' },
+  ])
+  let xglddjOptions = ref([
+    { label: '低', value: '低' },
+    { label: '中', value: '中' },
+    { label: '高', value: '高' },
+    { label: '严', value: '严' },
+  ])
   const rules = ref({
     c_id: [{ required: true, message: '请输入cnvd/cve编号', trigger: 'change' }],
-    // vul_id: [{ required: true, message: '请输入特征id', trigger: 'change' }],
-    // vul_name: [{ required: true, message: '请输入特征名称', trigger: 'blur' }],
+    vul_id: [{ required: true, message: '请输入特征id', trigger: 'change' }],
+    vul_name: [{ required: true, message: '请输入特征名称', trigger: 'blur' }],
     vul_type: [{ required: true, message: '请选择特征类型', trigger: 'change' }],
     // star: [{ required: true, message: '请选择特征评价等级', trigger: 'change' }],
-    // vul_level: [{ required: true, message: '请选择相关资产重要等级', trigger: 'change' }],
-    // vul_rule: [{ required: true, message: '请输入漏洞规则定义', trigger: 'change' }],
+    vul_level: [{ required: true, message: '请选择相关资产重要等级', trigger: 'change' }],
+    vul_rule: [{ required: true, message: '请输入漏洞规则定义', trigger: 'change' }],
+    vul_payload: [{ required: true, message: '请输入返回值', trigger: 'change' }],
   })
   let sxztOptions = ref([
     { label: '生效', value: 1 },
@@ -404,8 +412,10 @@
         //   if (res.data.exists == 0) {
         //     // 代表特征不重复，可以正常创建 ，走创建接口
         const formData = {
-          vul_name: curXjData.vul_name,
+          c_id: curXjData.c_id,
+          chara_name: curXjData.chara_name,
           vul_type: curXjData.vul_type,
+          first_time: curXjData.first_time,
           star: curXjData.star,
           vul_level: curXjData.vul_level,
           vul_rule: curXjData.vul_rule,
@@ -414,8 +424,13 @@
         const { data: res2 } = await service.post('/api/v1/create_vul_chara', formData)
         console.log(res2)
         xjDialogVisible.value = false
-        searchClick()
+        // searchClick()
         ElMessage.success(res2.msg)
+        loading.value = true
+        setTimeout(() => {
+          searchClick()
+          loading.value = false
+        }, 1000)
         //   } else {
         //     // 代表特征名称重复
         //     ElMessage.error('该特征名称已存在，请重新输入！')
@@ -455,8 +470,13 @@
         console.log(res)
         bjDialogVisible.value = false
 
-        searchClick()
+        // searchClick()
         ElMessage.success(res.msg)
+        loading.value = true
+        setTimeout(() => {
+          searchClick()
+          loading.value = false
+        }, 1000)
       } else {
         console.log('error submit!')
         return false
@@ -465,6 +485,8 @@
     // bjDialogVisible.value = false // 关闭对话框
   }
   const del = async (row) => {
+    console.log(row)
+
     const { chara_id } = row
     const vulIds = [chara_id]
 
@@ -481,6 +503,11 @@
             message: '删除成功',
           })
           searchClick()
+          loading.value = true
+          setTimeout(() => {
+            searchClick()
+            loading.value = false
+          }, 1000)
         }
       })
       .catch(() => {
@@ -505,6 +532,11 @@
             message: '删除成功',
           })
           searchClick()
+          loading.value = true
+          setTimeout(() => {
+            searchClick()
+            loading.value = false
+          }, 1000)
         }
       })
       .catch(() => {
@@ -515,13 +547,13 @@
       })
   }
   const multPut = () => {
-    const vul_id = multipleSelection.value.map((item) => item.vul_id)
-    console.log(vul_id)
+    const chara_id = multipleSelection.value.map((item) => item.chara_id)
+    console.log(chara_id)
 
     service({
       method: 'post',
       url: '/api/v1/export_vul_chara',
-      data: { vul_id },
+      data: { chara_id },
       responseType: 'blob',
     })
       .then(function (res) {
@@ -538,6 +570,31 @@
       })
       .catch(function (res) {
         console.log('error', res)
+      })
+  }
+  const downloadTemplate = () => {
+    // 发起请求下载模板文件
+    // 例如：
+    service({
+      method: 'get',
+      url: '/api/v1/export_vul_chara_template',
+      responseType: 'blob',
+    })
+      .then((res) => {
+        const contentDisposition = res.headers['content-disposition']
+        const fileName = contentDisposition.split('filename=')[1].trim()
+        let blob = new Blob([res.data]) // { type: "application/vnd.ms-excel" }
+        let url = window.URL.createObjectURL(blob) // 创建一个临时的url指向blob对象
+        let a = document.createElement('a')
+        a.href = url
+        a.download = fileName
+        a.click()
+        // 释放这个临时的对象url
+        window.URL.revokeObjectURL(url)
+      })
+      .catch((error) => {
+        console.error('下载模板失败：', error)
+        // 处理下载失败的情况
       })
   }
 

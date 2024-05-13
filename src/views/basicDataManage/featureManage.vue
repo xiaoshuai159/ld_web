@@ -1,47 +1,56 @@
 <template>
   <div class="app-container demo-tabs">
-    <div class="my-header">应用资产特征管理表格</div>
+    <div class="my-header">资产归属管理表格</div>
     <el-divider></el-divider>
     <div class="selectClass" style="margin-top: 15px">
       <el-row>
         <el-col :span="2"></el-col>
         <el-col :span="22">
           <div style="display: inline-block">
-            <span>特征等级：</span>
-            <el-select v-model="tzdjValue" placeholder="请选择" style="width: 220px">
-              <el-option v-for="item in tzdjOptions" :key="item.value" :label="item.label" :value="item.value" />
+            <span>资产名称：</span>
+            <el-input v-model="asset_name" style="width: 220px" placeholder="请输入" />
+            <span style="margin-left: 10px">资产类型：</span>
+            <el-select v-model="asset_type" placeholder="请选择" style="width: 220px">
+              <el-option v-for="item in zclxOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
-            <!-- <span>特征编号：</span>
-            <el-input v-model="tzbhInput" style="width: 220px" placeholder="请输入" /> -->
-            <span style="margin-left: 10px">特征名称：</span>
-            <el-input v-model="tzmcInput" style="width: 220px" placeholder="请输入" />
-
-            <span style="margin-left: 10px">重要程度：</span>
-            <el-select v-model="zycdValue" placeholder="请选择" style="width: 220px">
-              <el-option v-for="item in zycdOptions" :key="item.value" :label="item.label" :value="item.value" />
+            <span style="margin-left: 10px">资产星级：</span>
+            <el-select v-model="asset_star" placeholder="请选择" style="width: 220px">
+              <el-option v-for="item in zcxjOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </div>
         </el-col>
       </el-row>
-
       <el-row style="margin-top: 10px">
         <el-col :span="2"></el-col>
-        <el-col :span="18">
-          <div>
-            <span>特征类型：</span>
-            <el-select v-model="tzlxValue" placeholder="请选择" style="width: 220px">
-              <el-option v-for="item in tzlxOptions" :key="item.value" :label="item.label" :value="item.value" />
+        <el-col :span="22">
+          <div style="display: inline-block">
+            <span>相关资产重要程度：</span>
+            <el-select v-model="asset_level" placeholder="请选择" style="width: 220px">
+              <el-option v-for="item in xgzczycdOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
-            <!-- <span style="margin-left: 10px">特征等级：</span>
-            <el-select v-model="tzdjValue" placeholder="请选择" style="width: 220px">
-              <el-option v-for="item in tzdjOptions" :key="item.value" :label="item.label" :value="item.value" />
-            </el-select> -->
-            <!-- <span style="margin-left: 10px">日期选择：</span>
-            <el-date-picker v-model="dateValue" type="daterange" range-separator="至" start-placeholder="开始日期"
-              end-placeholder="结束日期" style="transform: translateY(2px);"/> -->
+            <!-- <span>特征编号：</span>
+              <el-input v-model="tzbhInput" style="width: 220px" placeholder="请输入" /> -->
+            <span style="margin-left: 10px">资产归属地区：</span>
+            <el-input v-model="asset_area" style="width: 220px" placeholder="请输入" />
+
+            <span style="margin-left: 10px">资产备案信息：</span>
+            <el-input v-model="asset_icp" style="width: 220px" placeholder="请输入" />
           </div>
         </el-col>
       </el-row>
+
+      <!-- <el-row style="margin-top: 10px">
+          <el-col :span="2"></el-col>
+          <el-col :span="18">
+            <div>
+              <span>特征类型：</span>
+              <el-select v-model="tzlxValue" placeholder="请选择" style="width: 220px">
+                <el-option v-for="item in tzlxOptions" :key="item.value" :label="item.label" :value="item.value" />
+              </el-select>
+              
+            </div>
+          </el-col>
+        </el-row> -->
     </div>
     <el-row style="margin-top: 16px">
       <el-col :span="1"></el-col>
@@ -55,8 +64,8 @@
           <el-button type="primary" @click="searchClick">查 询</el-button>
           <el-button @click="resetClick">重 置</el-button>
           <!-- <a style="margin-left: 14px; cursor: pointer; color: #1675d5" @click="toggleAdvanced">
-              {{ isCollapse ? '收起' : '展开' }}
-            </a> -->
+                {{ isCollapse ? '收起' : '展开' }}
+              </a> -->
         </div>
       </el-col>
     </el-row>
@@ -71,19 +80,21 @@
             @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" width="55" />
-            <!-- <el-table-column prop="chara_id" label="特征编号" min-width="120" align="center" show-overflow-tooltip /> -->
-            <el-table-column prop="chara_name" label="特征名称" sortable min-width="150" align="center" show-overflow-tooltip />
-            <el-table-column prop="chara_type" label="特征类型" min-width="100" align="center" show-overflow-tooltip />
-            <el-table-column prop="create_time" label="创建时间" sortable min-width="170" align="center" show-overflow-tooltip />
-            <el-table-column prop="star" label="特征等级评价" sortable min-width="180" align="center">
+            <!-- <el-table-column prop="asset_id" label="特征编号" min-width="120" align="center" show-overflow-tooltip /> -->
+            <el-table-column prop="asset_name" label="资产名称" sortable min-width="150" align="center" show-overflow-tooltip />
+            <el-table-column prop="asset_type" label="资产类型" min-width="100" align="center" show-overflow-tooltip />
+            <el-table-column prop="star" label="评价星级" sortable min-width="180" align="center">
               <template #default="{ row }">
                 <el-rate v-model="row.star" disabled show-score text-color="#ff9900" score-template="{value}星" />
               </template>
             </el-table-column>
-            <el-table-column prop="chara_level" label="相关资产重要等级" sortable min-width="180" align="center" show-overflow-tooltip />
+            <el-table-column prop="asset_level" label="相关资产重要程度" sortable min-width="180" align="center" show-overflow-tooltip />
             <el-table-column prop="ma_name" label="厂商名称" min-width="130" align="center" show-overflow-tooltip />
             <el-table-column prop="product_name" label="产品名称" min-width="130" align="center" show-overflow-tooltip />
             <el-table-column prop="product_version" label="产品版本" min-width="130" align="center" show-overflow-tooltip />
+            <el-table-column prop="asset_unit" label="资产归属单位" min-width="180" align="center" show-overflow-tooltip />
+            <el-table-column prop="asset_icp" label="资产备案信息" min-width="180" align="center" show-overflow-tooltip />
+            <el-table-column prop="labels" label="资产标签" min-width="180" align="center" show-overflow-tooltip />
             <el-table-column prop="operator" label="操作" min-width="140" align="center" fixed="right">
               <template #default="scope">
                 <el-button type="primary" size="small" link @click="xqClick(scope.row)"> 详情 </el-button>
@@ -116,15 +127,15 @@
     </el-row>
     <el-dialog v-model="xqDialogVisible" title="详情信息" width="35%">
       <div class="xqDialog">
-        <span>特征编号</span><span>{{ curXqData.chara_id }}</span
+        <span>资产特征id</span><span>{{ curXqData.asset_id }}</span
         ><br />
-        <span>特征名称</span><span>{{ curXqData.chara_name }}</span
+        <span>资产名称</span><span>{{ curXqData.asset_name }}</span
         ><br />
-        <span>特征类型</span><span>{{ curXqData.chara_type }}</span
+        <span>资产类型</span><span>{{ curXqData.asset_type }}</span
         ><br />
-        <span>特征评价等级</span
+        <span>评价星级</span
         ><span> <el-rate v-model="curXqData.star" disabled show-score text-color="#ff9900" score-template="{value}星" /> </span><br />
-        <span>特征资产重要等级</span><span>{{ curXqData.chara_level }}</span
+        <span>相关资产重要程度</span><span>{{ curXqData.asset_level }}</span
         ><br />
         <span>厂商名称</span><span>{{ curXqData.ma_name }}</span
         ><br />
@@ -132,30 +143,30 @@
         ><br />
         <span>产品版本</span><span>{{ curXqData.product_version }}</span
         ><br />
-        <span>查询语法</span><span>{{ curXqData.query_info }}</span
+        <span>资产归属单位</span><span>{{ curXqData.asset_unit }}</span
         ><br />
-        <span>特征创建/上传日期</span><span>{{ curXqData.create_time }}</span
+        <span>资产备案信息</span><span>{{ curXqData.asset_icp }}</span
         ><br />
-        <span>特征描述</span><span>{{ curXqData.description }}</span>
+        <span>资产标签</span><span>{{ curXqData.labels }}</span>
       </div>
     </el-dialog>
     <el-dialog v-model="xjDialogVisible" title="新建" width="30%">
       <el-form ref="xjForm" :model="curXjData" :rules="rules" label-width="140px">
-        <el-form-item label="特征名称" prop="chara_name">
-          <el-input v-model="curXjData.chara_name" placeholder="请输入特征名称" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
+        <el-form-item label="资产名称" prop="asset_name">
+          <el-input v-model="curXjData.asset_name" placeholder="请输入资产名称" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
         </el-form-item>
-        <el-form-item label="特征类型" prop="chara_type">
-          <el-select v-model="curXjData.chara_type" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
+        <el-form-item label="资产类型" prop="asset_type">
+          <el-select v-model="curXjData.asset_type" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
             <el-option v-for="item in tzlxOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="特征评价等级" prop="star">
+        <el-form-item label="评价星级" prop="star">
           <el-select v-model="curXjData.star" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
             <el-option v-for="item in tzdjOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="相关资产重要等级" prop="chara_level">
-          <el-select v-model="curXjData.chara_level" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
+        <el-form-item label="相关资产重要程度" prop="asset_level">
+          <el-select v-model="curXjData.asset_level" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
             <el-option v-for="item in zycdOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
@@ -178,11 +189,24 @@
             @keyup.enter="handleSubmit(xjForm)"
           />
         </el-form-item>
-        <el-form-item label="查询语法" prop="query_info">
-          <el-input v-model="curXjData.query_info" placeholder="请输入查询语法" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
+        <el-form-item label="资产归属单位" prop="asset_unit">
+          <el-input
+            v-model="curXjData.asset_unit"
+            placeholder="请输入资产归属单位"
+            style="width: 220px"
+            @keyup.enter="handleSubmit(xjForm)"
+          />
         </el-form-item>
-        <el-form-item label="特征描述" prop="description">
-          <el-input v-model="curXjData.description" placeholder="请输入描述信息" style="width: 220px" type="textarea" :rows="3" />
+        <el-form-item label="资产备案信息" prop="asset_icp">
+          <el-input
+            v-model="curXjData.asset_icp"
+            placeholder="请输入资产备案信息"
+            style="width: 220px"
+            @keyup.enter="handleSubmit(xjForm)"
+          />
+        </el-form-item>
+        <el-form-item label="资产标签" prop="labels">
+          <el-input v-model="curXjData.labels" placeholder="请输入资产标签" style="width: 220px" type="textarea" :rows="3" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -194,36 +218,33 @@
     </el-dialog>
     <el-dialog v-model="bjDialogVisible" title="编辑" width="30%">
       <el-form ref="bjForm" :model="curBjData" :rules="rules" label-width="140px">
-        <el-form-item label="特征id" prop="chara_name">
-          <el-input v-model="curBjData.chara_id" placeholder="请输入特征id" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
+        <el-form-item label="资产名称" prop="asset_name">
+          <el-input v-model="curBjData.asset_name" placeholder="请输入资产名称" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
         </el-form-item>
-        <el-form-item label="特征名称" prop="chara_name">
-          <el-input v-model="curBjData.chara_name" placeholder="请输入特征名称" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
-        </el-form-item>
-        <el-form-item label="特征类型" prop="chara_type">
-          <el-select v-model="curBjData.chara_type" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
+        <el-form-item label="资产类型" prop="asset_type">
+          <el-select v-model="curBjData.asset_type" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
             <el-option v-for="item in tzlxOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="特征评价等级" prop="star">
+        <el-form-item label="评价星级" prop="star">
           <el-select v-model="curBjData.star" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
             <el-option v-for="item in tzdjOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="相关资产重要等级" prop="chara_level">
-          <el-select v-model="curBjData.chara_level" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
+        <el-form-item label="相关资产重要程度" prop="asset_level">
+          <el-select v-model="curBjData.asset_level" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
             <el-option v-for="item in zycdOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="厂商名称" prop="ma_name">
-          <el-input v-model="curBjData.ma_name" placeholder="请输入厂商名称" style="width: 220px" @keyup.enter="handleSubmit2(xjForm)" />
+          <el-input v-model="curBjData.ma_name" placeholder="请输入厂商名称" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
         </el-form-item>
         <el-form-item label="产品名称" prop="product_name">
           <el-input
             v-model="curBjData.product_name"
             placeholder="请输入产品名称"
             style="width: 220px"
-            @keyup.enter="handleSubmit2(xjForm)"
+            @keyup.enter="handleSubmit2(bjForm)"
           />
         </el-form-item>
         <el-form-item label="产品版本" prop="product_version">
@@ -231,14 +252,27 @@
             v-model="curBjData.product_version"
             placeholder="请输入产品版本"
             style="width: 220px"
-            @keyup.enter="handleSubmit2(xjForm)"
+            @keyup.enter="handleSubmit2(bjForm)"
           />
         </el-form-item>
-        <el-form-item label="查询语法" prop="query_info">
-          <el-input v-model="curBjData.query_info" placeholder="请输入查询语法" style="width: 220px" @keyup.enter="handleSubmit2(xjForm)" />
+        <el-form-item label="资产归属单位" prop="asset_unit">
+          <el-input
+            v-model="curBjData.asset_unit"
+            placeholder="请输入资产归属单位"
+            style="width: 220px"
+            @keyup.enter="handleSubmit2(bjForm)"
+          />
         </el-form-item>
-        <el-form-item label="特征描述" prop="description">
-          <el-input v-model="curBjData.description" placeholder="请输入特征名称" style="width: 220px" type="textarea" :rows="3" />
+        <el-form-item label="资产备案信息" prop="asset_icp">
+          <el-input
+            v-model="curBjData.asset_icp"
+            placeholder="请输入资产备案信息"
+            style="width: 220px"
+            @keyup.enter="handleSubmit2(bjForm)"
+          />
+        </el-form-item>
+        <el-form-item label="资产标签" prop="labels">
+          <el-input v-model="curBjData.labels" placeholder="请输入资产标签" style="width: 220px" type="textarea" :rows="3" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -272,13 +306,37 @@
   import service from '@/api/request'
   import { ElMessage, type FormInstance, ElMessageBox } from 'element-plus'
   const rules = ref({
-    chara_id: [{ required: true, message: '请输入特征id', trigger: 'change' }],
-    chara_name: [{ required: true, message: '请输入特征名称', trigger: 'blur' }],
-    chara_type: [{ required: true, message: '请选择特征类型', trigger: 'change' }],
+    asset_id: [{ required: true, message: '请输入特征id', trigger: 'change' }],
+    asset_name: [{ required: true, message: '请输入特征名称', trigger: 'blur' }],
+    asset_type: [{ required: true, message: '请选择特征类型', trigger: 'change' }],
     star: [{ required: true, message: '请选择特征评价等级', trigger: 'change' }],
-    chara_level: [{ required: true, message: '请选择相关资产重要等级', trigger: 'change' }],
+    asset_level: [{ required: true, message: '请选择相关资产重要等级', trigger: 'change' }],
     query_info: [{ required: true, message: '请输入查询语法', trigger: 'change' }],
   })
+  let asset_name = ref('')
+  let asset_type = ref('')
+  let asset_star = ref('')
+  let asset_level = ref('')
+  let asset_area = ref('')
+  let asset_icp = ref('')
+  let zclxOptions = ref([
+    { label: '文件特征', value: '文件特征' },
+    { label: '网路特征', value: '网路特征' },
+    { label: '进程特征', value: '进程特征' },
+  ])
+  let zcxjOptions = ref([
+    { label: 1, value: 1 },
+    { label: 2, value: 2 },
+    { label: 3, value: 3 },
+    { label: 4, value: 4 },
+    { label: 5, value: 5 },
+  ])
+  let xgzczycdOptions = ref([
+    { label: '低', value: '低' },
+    { label: '中', value: '中' },
+    { label: '高', value: '高' },
+    { label: '严', value: '严' },
+  ])
   let loading = ref(false)
   let xqDialogVisible = ref(false)
   let xjDialogVisible = ref(false)
@@ -318,23 +376,23 @@
     curXqData.value = row
     xqDialogVisible.value = true
   }
-  const charaTypeOptions = ref([
+  const assetTypeOptions = ref([
     { label: 'URL特征', value: 'URL特征' },
     { label: 'IP特征', value: 'IP特征' },
   ])
   let curXjData: any = reactive({
-    chara_name: '',
-    chara_type: '',
+    asset_name: '',
+    asset_type: '',
     star: '',
-    chara_level: '',
+    asset_level: '',
     query_info: '',
     description: '',
   })
   let curBjData: any = reactive({
-    chara_name: '',
-    chara_type: '',
+    asset_name: '',
+    asset_type: '',
     star: '',
-    chara_level: '',
+    asset_level: '',
     query_info: '',
     description: '',
   })
@@ -354,7 +412,7 @@
     file = event.target.files[0]
     const formData = new FormData()
     formData.append('file', file)
-    service.post('/api/v1/upload_chara', formData).then(({ data: res }) => {
+    service.post('/api/v1/upload_asset', formData).then(({ data: res }) => {
       console.log(res)
       if (res.code == 200) {
         ElMessage.success('上传成功')
@@ -399,22 +457,25 @@
   const searchClick = async () => {
     loading.value = true
     const reqData = {
-      chara_name: tzmcInput.value,
-      chara_type: tzlxValue.value,
-      star: tzdjValue.value,
-      chara_level: zycdValue.value,
+      asset_name: asset_name.value,
+      asset_type: asset_type.value,
+      asset_star: asset_star.value,
+      asset_level: asset_level.value,
+      asset_area: asset_area.value,
+      asset_icp: asset_icp.value,
     }
-    const { data: res } = await service.get('/api/v1/search_chara', { params: reqData })
+    const { data: res } = await service.get('/api/v1/search_asset', { params: reqData })
     // console.log(res)
     tableData.value = res.data
     loading.value = false
   }
   const resetClick = () => {
-    tzbhInput.value = ''
-    tzmcInput.value = ''
-    zycdValue.value = ''
-    tzlxValue.value = ''
-    tzdjValue.value = ''
+    asset_name.value = ''
+    asset_type.value = ''
+    asset_star.value = ''
+    asset_level.value = ''
+    asset_area.value = ''
+    asset_icp.value = ''
     searchClick()
   }
   const xjForm = ref<FormInstance>()
@@ -427,23 +488,23 @@
     // 如果校验通过，再执行后续的逻辑
     formEl.validate(async (valid) => {
       if (valid) {
-        const { data: res } = await service.get('/api/v1/search_chara_by_name', { params: { chara_name: curXjData.chara_name } })
+        const { data: res } = await service.get('/api/v1/search_asset_by_name', { params: { asset_name: curXjData.asset_name } })
         // console.log(res);
         if (res.code == 200) {
           if (res.data.exists == 0) {
             // 代表特征不重复，可以正常创建 ，走创建接口
             const formData = {
-              chara_name: curXjData.chara_name,
-              chara_type: curXjData.chara_type,
+              asset_name: curXjData.asset_name,
+              asset_type: curXjData.asset_type,
               star: curXjData.star,
-              chara_level: curXjData.chara_level,
+              asset_level: curXjData.asset_level,
               query_info: curXjData.query_info,
               description: curXjData.description,
               ma_name: curXjData.ma_name,
               product_name: curXjData.product_name,
               product_version: curXjData.product_version,
             }
-            const { data: res2 } = await service.post('/api/v1/create_chara', formData)
+            const { data: res2 } = await service.post('/api/v1/create_asset', formData)
             console.log(res2)
             xjDialogVisible.value = false
             searchClick()
@@ -472,18 +533,18 @@
 
       if (valid) {
         const formData = {
-          chara_id: curBjData.chara_id,
-          chara_name: curBjData.chara_name,
-          chara_type: curBjData.chara_type,
+          asset_id: curBjData.asset_id,
+          asset_name: curBjData.asset_name,
+          asset_type: curBjData.asset_type,
           star: curBjData.star,
-          chara_level: curBjData.chara_level,
+          asset_level: curBjData.asset_level,
           query_info: curBjData.query_info,
           description: curBjData.description,
           ma_name: curBjData.ma_name,
           product_name: curBjData.product_name,
           product_version: curBjData.product_version,
         }
-        const { data: res } = await service.post('/api/v1/update_chara', formData)
+        const { data: res } = await service.post('/api/v1/update_asset', formData)
         console.log(res)
         bjDialogVisible.value = false
 
@@ -497,8 +558,8 @@
     // bjDialogVisible.value = false // 关闭对话框
   }
   const del = async (row) => {
-    const { chara_id } = row
-    const charaIds = [chara_id]
+    const { asset_id } = row
+    const assetIds = [asset_id]
 
     ElMessageBox.confirm('是否确定删除此条数据?', 'Warning', {
       confirmButtonText: '确认',
@@ -506,7 +567,7 @@
       type: 'warning',
     })
       .then(async () => {
-        const { data: res } = await service.post('/api/v1/delete_chara', { chara_id: charaIds })
+        const { data: res } = await service.post('/api/v1/delete_asset', { asset_id: assetIds })
         if (res.code == 200) {
           ElMessage({
             type: 'success',
@@ -523,14 +584,14 @@
       })
   }
   const multDel = async () => {
-    const chara_id = multipleSelection.value.map((item) => item.chara_id)
+    const asset_id = multipleSelection.value.map((item) => item.asset_id)
     ElMessageBox.confirm('是否确定删除选中数据?', 'Warning', {
       confirmButtonText: '确认',
       cancelButtonText: '取消',
       type: 'warning',
     })
       .then(async () => {
-        const { data: res } = await service.post('/api/v1/delete_chara', { chara_id })
+        const { data: res } = await service.post('/api/v1/delete_asset', { asset_id })
         if (res.code == 200) {
           ElMessage({
             type: 'success',
@@ -547,13 +608,13 @@
       })
   }
   const multPut = () => {
-    const chara_id = multipleSelection.value.map((item) => item.chara_id)
-    console.log(chara_id)
+    const asset_id = multipleSelection.value.map((item) => item.asset_id)
+    console.log(asset_id)
 
     service({
       method: 'post',
-      url: '/api/v1/export_chara',
-      data: { chara_id },
+      url: '/api/v1/export_asset',
+      data: { asset_id },
       responseType: 'blob',
     })
       .then(function (res) {
@@ -583,7 +644,7 @@
     // 例如：
     service({
       method: 'get',
-      url: '/api/v1/export_asset_chara_template',
+      url: '/api/v1/export_asset_template',
       responseType: 'blob',
     })
       .then((res) => {

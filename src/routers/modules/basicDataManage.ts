@@ -37,6 +37,18 @@ const basicDataManageRouter = [
         name: 'bugScript',
         meta: { title: '漏洞探测脚本管理', icon: 'Cpu', keepAlive: true },
       },
+      {
+        path: '/basicDataManage/featureManage',
+        component: () => import('@/views/basicDataManage/featureManage.vue'),
+        name: 'featureManage',
+        meta: { title: '资产归属管理', keepAlive: true, icon: 'Tickets' },
+      },
+      {
+        path: '/basicDataManage/bugManage',
+        component: () => import('@/views/basicDataManage/bugManage.vue'),
+        name: 'bugManage',
+        meta: { title: '漏洞信息管理', icon: 'FolderDelete', keepAlive: true },
+      },
     ],
   },
 ]
