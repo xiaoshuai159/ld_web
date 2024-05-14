@@ -328,21 +328,21 @@
     file = event.target.files[0]
     const formData = new FormData()
     formData.append('file', file)
-    service
-      .post('/api/v1/upload_asset', {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-      .then(({ data: res }) => {
-        console.log(res)
-        if (res.code == 200) {
-          ElMessage.success('上传成功')
-          wjDialogVisible.value = false
-        } else {
-          ElMessage.error(res.msg)
-        }
-      })
+    service.post('/api/v1/upload_asset', formData).then(({ data: res }) => {
+      console.log(res)
+      if (res.code == 200) {
+        ElMessage.success('上传成功')
+        wjDialogVisible.value = false
+        file = null
+        event.target.value = ''
+        searchClick()
+      } else {
+        ElMessage.error(res.msg)
+        file = null
+        event.target.value = ''
+        searchClick()
+      }
+    })
   }
   const xjClick = () => {
     wjDialogVisible.value = true

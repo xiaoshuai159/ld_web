@@ -361,10 +361,12 @@
         wjDialogVisible.value = false
         file = null
         event.target.value = ''
+        searchClick()
       } else {
         ElMessage.error(res.msg)
         file = null
         event.target.value = ''
+        searchClick()
       }
     })
   }

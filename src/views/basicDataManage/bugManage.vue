@@ -13,7 +13,7 @@
             <el-select v-model="vul_level" placeholder="请选择" style="width: 220px">
               <el-option v-for="item in whjbOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
-            <span>漏洞类型：</span>
+            <span style="margin-left: 10px">漏洞类型：</span>
             <el-select v-model="vul_type" placeholder="请选择" style="width: 220px">
               <el-option v-for="item in ldlxOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
@@ -25,9 +25,9 @@
         <el-col :span="2"></el-col>
         <el-col :span="18">
           <div>
-            <span style="margin-left: 10px">影响产品：</span>
+            <span>影响产品：</span>
             <el-input v-model="production" style="width: 220px" placeholder="请输入" />
-            <span>验证信息：</span>
+            <span style="margin-left: 10px">验证信息：</span>
             <el-select v-model="verified" placeholder="请选择" style="width: 220px">
               <el-option v-for="item in yzxxOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
@@ -72,7 +72,7 @@
             <el-table-column type="selection" width="55" />
             <!-- <el-table-column prop="vul_id" label="特征编号" min-width="120" align="center" show-overflow-tooltip /> -->
             <el-table-column prop="vul_name" label="漏洞名称" sortable min-width="150" align="center" show-overflow-tooltip />
-            <el-table-column prop="cnvd_id" label="cvnd编号" min-width="150" align="center" show-overflow-tooltip />
+            <el-table-column prop="cnvd_id" label="cnvd编号" min-width="150" align="center" show-overflow-tooltip />
             <el-table-column prop="cve_id" label="cve编号" min-width="150" align="center" show-overflow-tooltip />
             <el-table-column prop="vul_type" label="漏洞类型" min-width="100" align="center" show-overflow-tooltip />
             <el-table-column prop="vul_level" label="危害级别" sortable min-width="180" align="center" show-overflow-tooltip />
@@ -116,73 +116,118 @@
     </el-row>
     <el-dialog v-model="xqDialogVisible" title="详情信息" width="35%">
       <div class="xqDialog">
-        <span>特征编号</span><span>{{ curXqData.vul_id }}</span
+        <span>漏洞名称</span><span>{{ curXqData.vul_name }}</span
         ><br />
-        <span>特征名称</span><span>{{ curXqData.vul_name }}</span
+        <span>cnvd编号</span><span>{{ curXqData.cnvd_id }}</span
         ><br />
-        <span>特征类型</span><span>{{ curXqData.vul_type }}</span
+        <span>cve编号</span><span>{{ curXqData.cve_id }}</span
         ><br />
-        <span>特征评价等级</span
-        ><span> <el-rate v-model="curXqData.star" disabled show-score text-color="#ff9900" score-template="{value}星" /> </span><br />
-        <span>特征资产重要等级</span><span>{{ curXqData.vul_level }}</span
+        <span>危害级别</span><span>{{ curXqData.vul_level }}</span
         ><br />
-        <span>厂商名称</span><span>{{ curXqData.ma_name }}</span
+        <span>公开日期</span><span>{{ curXqData.public_date }}</span
         ><br />
-        <span>产品名称</span><span>{{ curXqData.product_name }}</span
+        <span>影响产品</span><span>{{ curXqData.production }}</span
         ><br />
-        <span>产品版本</span><span>{{ curXqData.product_version }}</span
+        <span>漏洞描述</span><span>{{ curXqData.description }}</span
         ><br />
-        <span>查询语法</span><span>{{ curXqData.query_info }}</span
+        <span>解决方案</span><span>{{ curXqData.solution }}</span
         ><br />
-        <span>特征创建/上传日期</span><span>{{ curXqData.create_time }}</span
+        <span>漏洞类型</span><span>{{ curXqData.vul_type }}</span
         ><br />
-        <span>特征描述</span><span>{{ curXqData.description }}</span>
+        <span>漏洞来源</span><span>{{ curXqData.vul_from }}</span
+        ><br />
+        <span>报送时间</span><span>{{ curXqData.get_date }}</span
+        ><br />
+        <span>收录时间</span><span>{{ curXqData.first_date }}</span
+        ><br />
+        <span>更新时间</span><span>{{ curXqData.update_date }}</span>
       </div>
     </el-dialog>
     <el-dialog v-model="xjDialogVisible" title="新建" width="30%">
       <el-form ref="xjForm" :model="curXjData" :rules="rules" label-width="140px">
-        <el-form-item label="特征名称" prop="vul_name">
-          <el-input v-model="curXjData.vul_name" placeholder="请输入特征名称" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
+        <el-form-item label="漏洞名称" prop="vul_name">
+          <el-input v-model="curXjData.vul_name" placeholder="请输入漏洞名称" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
         </el-form-item>
-        <el-form-item label="特征类型" prop="vul_type">
-          <el-select v-model="curXjData.vul_type" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
-            <el-option v-for="item in tzlxOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
+        <el-form-item label="cnvd编号" prop="cnvd_id">
+          <el-input v-model="curXjData.cnvd_id" placeholder="请输入cnvd编号" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
         </el-form-item>
-        <el-form-item label="特征评价等级" prop="star">
-          <el-select v-model="curXjData.star" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
-            <el-option v-for="item in tzdjOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
+        <el-form-item label="cve编号" prop="cve_id">
+          <el-input v-model="curXjData.cve_id" placeholder="请输入cve编号" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
         </el-form-item>
-        <el-form-item label="相关资产重要等级" prop="vul_level">
+        <el-form-item label="危害级别" prop="vul_level">
           <el-select v-model="curXjData.vul_level" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
             <el-option v-for="item in zycdOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="厂商名称" prop="ma_name">
-          <el-input v-model="curXjData.ma_name" placeholder="请输入厂商名称" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
-        </el-form-item>
-        <el-form-item label="产品名称" prop="product_name">
-          <el-input
-            v-model="curXjData.product_name"
-            placeholder="请输入产品名称"
+        <el-form-item label="公开日期" prop="public_date">
+          <el-date-picker
+            v-model="curXjData.public_date"
+            type="datetime"
+            placeholder="请选择"
             style="width: 220px"
             @keyup.enter="handleSubmit(xjForm)"
           />
         </el-form-item>
-        <el-form-item label="产品版本" prop="product_version">
-          <el-input
-            v-model="curXjData.product_version"
-            placeholder="请输入产品版本"
+        <el-form-item label="影响产品" prop="production">
+          <el-input v-model="curXjData.production" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
+        </el-form-item>
+        <el-form-item label="漏洞描述" prop="description">
+          <el-input v-model="curXjData.description" placeholder="请输入描述信息" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
+        </el-form-item>
+        <el-form-item label="解决方案" prop="solution">
+          <el-input v-model="curXjData.solution" placeholder="请输入解决方案" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
+        </el-form-item>
+        <el-form-item label="漏洞类型" prop="vul_type">
+          <el-select v-model="curXjData.vul_type" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
+            <el-option v-for="item in tzlxOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="漏洞来源" prop="vul_from">
+          <el-input v-model="curXjData.vul_from" placeholder="请输入漏洞来源" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
+        </el-form-item>
+        <el-form-item label="报送时间" prop="get_date">
+          <el-date-picker
+            v-model="curXjData.get_date"
+            type="datetime"
+            placeholder="请选择"
             style="width: 220px"
             @keyup.enter="handleSubmit(xjForm)"
           />
         </el-form-item>
-        <el-form-item label="查询语法" prop="query_info">
-          <el-input v-model="curXjData.query_info" placeholder="请输入查询语法" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
+        <el-form-item label="收录时间" prop="first_date">
+          <el-date-picker
+            v-model="curXjData.first_date"
+            type="datetime"
+            placeholder="请选择"
+            style="width: 220px"
+            @keyup.enter="handleSubmit(xjForm)"
+          />
         </el-form-item>
-        <el-form-item label="特征描述" prop="description">
-          <el-input v-model="curXjData.description" placeholder="请输入描述信息" style="width: 220px" type="textarea" :rows="3" />
+        <el-form-item label="更新时间" prop="update_date">
+          <el-date-picker
+            v-model="curXjData.update_date"
+            type="datetime"
+            placeholder="请选择"
+            style="width: 220px"
+            @keyup.enter="handleSubmit(xjForm)"
+          />
+        </el-form-item>
+        <el-form-item label="附件" prop="file">
+          <el-upload
+            v-model:file-list="curXjData.file"
+            style="width: 220px"
+            class="upload-demo"
+            drag
+            action="#"
+            :auto-upload="false"
+            :limit="1"
+          >
+            <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+            <div class="el-upload__text"> 点击或将文件拖拽到这里<em>上传</em> </div>
+            <template #tip>
+              <div class="el-upload__tip"> 支持扩展名：.py .java .go </div>
+            </template>
+          </el-upload>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -194,51 +239,97 @@
     </el-dialog>
     <el-dialog v-model="bjDialogVisible" title="编辑" width="30%">
       <el-form ref="bjForm" :model="curBjData" :rules="rules" label-width="140px">
-        <el-form-item label="特征id" prop="vul_name">
-          <el-input v-model="curBjData.vul_id" placeholder="请输入特征id" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
+        <el-form-item label="漏洞id" prop="vul_id">
+          <el-input v-model="curBjData.vul_id" placeholder="请输入漏洞id" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
         </el-form-item>
-        <el-form-item label="特征名称" prop="vul_name">
-          <el-input v-model="curBjData.vul_name" placeholder="请输入特征名称" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
+        <el-form-item label="漏洞名称" prop="vul_name">
+          <el-input v-model="curBjData.vul_name" placeholder="请输入漏洞名称" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
         </el-form-item>
-        <el-form-item label="特征类型" prop="vul_type">
-          <el-select v-model="curBjData.vul_type" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
-            <el-option v-for="item in tzlxOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
+        <el-form-item label="cnvd编号" prop="cnvd_id">
+          <el-input v-model="curBjData.cnvd_id" placeholder="请输入cnvd编号" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
         </el-form-item>
-        <el-form-item label="特征评价等级" prop="star">
-          <el-select v-model="curBjData.star" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
-            <el-option v-for="item in tzdjOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
+        <el-form-item label="cve编号" prop="cve_id">
+          <el-input v-model="curBjData.cve_id" placeholder="请输入cve编号" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
         </el-form-item>
-        <el-form-item label="相关资产重要等级" prop="vul_level">
+        <el-form-item label="危害级别" prop="vul_level">
           <el-select v-model="curBjData.vul_level" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
             <el-option v-for="item in zycdOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="厂商名称" prop="ma_name">
-          <el-input v-model="curBjData.ma_name" placeholder="请输入厂商名称" style="width: 220px" @keyup.enter="handleSubmit2(xjForm)" />
-        </el-form-item>
-        <el-form-item label="产品名称" prop="product_name">
-          <el-input
-            v-model="curBjData.product_name"
-            placeholder="请输入产品名称"
+        <el-form-item label="公开日期" prop="public_date">
+          <el-date-picker
+            v-model="curBjData.public_date"
+            type="datetime"
+            placeholder="请选择"
             style="width: 220px"
-            @keyup.enter="handleSubmit2(xjForm)"
+            @keyup.enter="handleSubmit2(bjForm)"
           />
         </el-form-item>
-        <el-form-item label="产品版本" prop="product_version">
+        <el-form-item label="影响产品" prop="production">
+          <el-date-picker v-model="curBjData.production" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
+        </el-form-item>
+        <el-form-item label="漏洞描述" prop="description">
           <el-input
-            v-model="curBjData.product_version"
-            placeholder="请输入产品版本"
+            v-model="curBjData.description"
+            placeholder="请输入描述信息"
             style="width: 220px"
-            @keyup.enter="handleSubmit2(xjForm)"
+            @keyup.enter="handleSubmit2(bjForm)"
           />
         </el-form-item>
-        <el-form-item label="查询语法" prop="query_info">
-          <el-input v-model="curBjData.query_info" placeholder="请输入查询语法" style="width: 220px" @keyup.enter="handleSubmit2(xjForm)" />
+        <el-form-item label="解决方案" prop="solution">
+          <el-input v-model="curBjData.solution" placeholder="请输入解决方案" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
         </el-form-item>
-        <el-form-item label="特征描述" prop="description">
-          <el-input v-model="curBjData.description" placeholder="请输入特征名称" style="width: 220px" type="textarea" :rows="3" />
+        <el-form-item label="漏洞类型" prop="vul_type">
+          <el-select v-model="curBjData.vul_type" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
+            <el-option v-for="item in tzlxOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="漏洞来源" prop="vul_from">
+          <el-input v-model="curBjData.vul_from" placeholder="请输入漏洞来源" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
+        </el-form-item>
+        <el-form-item label="报送时间" prop="get_date">
+          <el-date-picker
+            v-model="curBjData.get_date"
+            type="datetime"
+            placeholder="请选择"
+            style="width: 220px"
+            @keyup.enter="handleSubmit2(bjForm)"
+          />
+        </el-form-item>
+        <el-form-item label="收录时间" prop="first_date">
+          <el-date-picker
+            v-model="curBjData.first_date"
+            type="datetime"
+            placeholder="请选择"
+            style="width: 220px"
+            @keyup.enter="handleSubmit2(bjForm)"
+          />
+        </el-form-item>
+        <el-form-item label="更新时间" prop="update_date">
+          <el-date-picker
+            v-model="curBjData.update_date"
+            type="datetime"
+            placeholder="请选择"
+            style="width: 220px"
+            @keyup.enter="handleSubmit2(bjForm)"
+          />
+        </el-form-item>
+        <el-form-item label="附件" prop="file">
+          <el-upload
+            v-model:file-list="curBjData.file"
+            style="width: 220px"
+            class="upload-demo"
+            drag
+            action="#"
+            :auto-upload="false"
+            :limit="1"
+          >
+            <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+            <div class="el-upload__text"> 点击或将文件拖拽到这里<em>上传</em> </div>
+            <template #tip>
+              <div class="el-upload__tip"> 支持扩展名：.py .java .go </div>
+            </template>
+          </el-upload>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -270,14 +361,17 @@
   import { Plus, Upload } from '@element-plus/icons-vue'
   import { ref, reactive, onMounted, Ref } from 'vue'
   import service from '@/api/request'
+  import dayjs from 'dayjs'
   import { ElMessage, type FormInstance, ElMessageBox } from 'element-plus'
   const rules = ref({
-    vul_id: [{ required: true, message: '请输入特征id', trigger: 'change' }],
-    vul_name: [{ required: true, message: '请输入特征名称', trigger: 'blur' }],
-    vul_type: [{ required: true, message: '请选择特征类型', trigger: 'change' }],
-    star: [{ required: true, message: '请选择特征评价等级', trigger: 'change' }],
-    vul_level: [{ required: true, message: '请选择相关资产重要等级', trigger: 'change' }],
-    query_info: [{ required: true, message: '请输入查询语法', trigger: 'change' }],
+    cnvd_id: [{ required: true, message: '请输入cnvd编号', trigger: 'change' }],
+    vul_name: [{ required: true, message: '请输入漏洞名称', trigger: 'blur' }],
+    vul_type: [{ required: true, message: '请选择漏洞类型', trigger: 'change' }],
+    public_date: [{ required: true, message: '请选择公开日期', trigger: 'change' }],
+    production: [{ required: true, message: '请输入影响产品', trigger: 'change' }],
+    vul_from: [{ required: true, message: '请输入漏洞来源', trigger: 'change' }],
+    vul_level: [{ required: true, message: '请输入危害等级', trigger: 'change' }],
+    verified: [{ required: true, message: '请选择验证信息', trigger: 'change' }],
   })
   let loading = ref(false)
   let xqDialogVisible = ref(false)
@@ -342,14 +436,7 @@
     { label: 'URL特征', value: 'URL特征' },
     { label: 'IP特征', value: 'IP特征' },
   ])
-  let curXjData: any = reactive({
-    vul_name: '',
-    vul_type: '',
-    star: '',
-    vul_level: '',
-    query_info: '',
-    description: '',
-  })
+  let curXjData: any = reactive({})
   let curBjData: any = reactive({
     vul_name: '',
     vul_type: '',
@@ -381,10 +468,12 @@
         wjDialogVisible.value = false
         file = null
         event.target.value = ''
+        searchClick()
       } else {
         ElMessage.error(res.msg)
         file = null
         event.target.value = ''
+        searchClick()
       }
     })
   }
@@ -419,10 +508,11 @@
   const searchClick = async () => {
     loading.value = true
     const reqData = {
-      vul_name: tzmcInput.value,
-      vul_type: tzlxValue.value,
-      star: tzdjValue.value,
-      vul_level: zycdValue.value,
+      vul_name: vul_name.value,
+      vul_type: vul_type.value,
+      vul_level: vul_level.value,
+      production: production.value,
+      verified: verified.value,
     }
     const { data: res } = await service.get('/api/v1/search_vul', { params: reqData })
     // console.log(res)
@@ -447,34 +537,53 @@
     // 如果校验通过，再执行后续的逻辑
     formEl.validate(async (valid) => {
       if (valid) {
-        const { data: res } = await service.get('/api/v1/search_vul_by_name', { params: { vul_name: curXjData.vul_name } })
+        // const { data: res } = await service.get('/api/v1/search_vul_by_name', { params: { vul_name: curXjData.vul_name } })
         // console.log(res);
-        if (res.code == 200) {
-          if (res.data.exists == 0) {
-            // 代表特征不重复，可以正常创建 ，走创建接口
-            const formData = {
-              vul_name: curXjData.vul_name,
-              vul_type: curXjData.vul_type,
-              star: curXjData.star,
-              vul_level: curXjData.vul_level,
-              query_info: curXjData.query_info,
-              description: curXjData.description,
-              ma_name: curXjData.ma_name,
-              product_name: curXjData.product_name,
-              product_version: curXjData.product_version,
-            }
-            const { data: res2 } = await service.post('/api/v1/create_vul', formData)
-            console.log(res2)
-            xjDialogVisible.value = false
-            searchClick()
-            ElMessage.success(res2.msg)
-          } else {
-            // 代表特征名称重复
-            ElMessage.error('该特征名称已存在，请重新输入！')
-          }
-        } else {
-          ElMessage.error(res.msg)
-        }
+        // if (res.code == 200) {
+        // 代表特征不重复，可以正常创建 ，走创建接口
+        // const formData = {
+        //   vul_name: curXjData.vul_name,
+        //   vul_type: curXjData.vul_type,
+        //   star: curXjData.star,
+        //   vul_level: curXjData.vul_level,
+        //   query_info: curXjData.query_info,
+        //   description: curXjData.description,
+        //   ma_name: curXjData.ma_name,
+        //   product_name: curXjData.product_name,
+        //   product_version: curXjData.product_version,
+        // }
+        console.log(curXjData.file)
+
+        const formData = new FormData()
+        formData.append('vul_name', curXjData.vul_name)
+        formData.append('cnvd_id', curXjData.cnvd_id)
+        formData.append('cve_id', curXjData.cve_id)
+        formData.append('vul_level', curXjData.vul_level)
+        formData.append('public_date', dayjs(curXjData.public_date).format('YYYY-MM-DD'))
+        formData.append('production', curXjData.production)
+        formData.append('description', curXjData.description)
+        formData.append('solution', curXjData.solution)
+        formData.append('vul_type', curXjData.vul_type)
+        formData.append('vul_from', curXjData.vul_from)
+        formData.append('verified', curXjData.verified)
+        formData.append('get_date', dayjs(curXjData.get_date).format('YYYY-MM-DD'))
+        formData.append('first_date', dayjs(curXjData.first_date).format('YYYY-MM-DD'))
+        formData.append('update_date', dayjs(curXjData.update_date).format('YYYY-MM-DD'))
+        formData.append('file', curXjData.file[0].raw)
+        const { data: res2 } = await service.post('/api/v1/create_vul', formData)
+        console.log(res2)
+        xjDialogVisible.value = false
+        // searchClick()
+        ElMessage.success(res2.msg)
+        searchClick()
+        loading.value = true
+        setTimeout(() => {
+          searchClick()
+          loading.value = false
+        }, 1000)
+        // } else {
+        //   ElMessage.error(res.msg)
+        // }
       } else {
         console.log('error submit!')
         return false
@@ -507,8 +616,13 @@
         console.log(res)
         bjDialogVisible.value = false
 
-        searchClick()
         ElMessage.success(res.msg)
+        searchClick()
+        loading.value = true
+        setTimeout(() => {
+          searchClick()
+          loading.value = false
+        }, 1000)
       } else {
         console.log('error submit!')
         return false
@@ -533,6 +647,11 @@
             message: '删除成功',
           })
           searchClick()
+          loading.value = true
+          setTimeout(() => {
+            searchClick()
+            loading.value = false
+          }, 1000)
         }
       })
       .catch(() => {
@@ -557,6 +676,11 @@
             message: '删除成功',
           })
           searchClick()
+          loading.value = true
+          setTimeout(() => {
+            searchClick()
+            loading.value = false
+          }, 1000)
         }
       })
       .catch(() => {
@@ -603,7 +727,7 @@
     // 例如：
     service({
       method: 'get',
-      url: '/api/v1/export_asset_vul_template',
+      url: '/api/v1/export_vul_template',
       responseType: 'blob',
     })
       .then((res) => {

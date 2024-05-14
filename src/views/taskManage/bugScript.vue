@@ -59,6 +59,7 @@
       <el-col :span="22">
         <div class="tableClass">
           <el-table
+            v-loading="loading"
             :data="tableData.slice((pagination.currentPage - 1) * pagination.pageSize, pagination.currentPage * pagination.pageSize)"
             style="width: 100%"
             @selection-change="handleSelectionChange"
@@ -269,6 +270,7 @@
   import service from '@/api/request'
   const fileList = ref<UploadUserFile[]>([])
   const fileList2 = ref<UploadUserFile[]>([])
+  let loading = ref(false)
   let curXjData: any = reactive({})
   let curBjData: any = reactive({})
   let curXqData: any = ref({})
@@ -378,6 +380,11 @@
             message: '删除成功',
           })
           searchClick()
+          loading.value = true
+          setTimeout(() => {
+            searchClick()
+            loading.value = false
+          }, 1000)
         }
       })
       .catch(() => {
@@ -402,6 +409,11 @@
             message: '删除成功',
           })
           searchClick()
+          loading.value = true
+          setTimeout(() => {
+            searchClick()
+            loading.value = false
+          }, 1000)
         }
       })
       .catch(() => {
@@ -454,21 +466,21 @@
     file = event.target.files[0]
     const formData = new FormData()
     formData.append('file', file)
-    service
-      .post('/api/v1/upload_poc', {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-      .then(({ data: res }) => {
-        console.log(res)
-        if (res.code == 200) {
-          ElMessage.success('上传成功')
-          wjDialogVisible.value = false
-        } else {
-          ElMessage.error(res.msg)
-        }
-      })
+    service.post('/api/v1/upload_poc', formData).then(({ data: res }) => {
+      console.log(res)
+      if (res.code == 200) {
+        ElMessage.success('上传成功')
+        wjDialogVisible.value = false
+        file = null
+        event.target.value = ''
+        searchClick()
+      } else {
+        ElMessage.error(res.msg)
+        file = null
+        event.target.value = ''
+        searchClick()
+      }
+    })
   }
   const xjClick = () => {
     wjDialogVisible.value = true
@@ -487,37 +499,39 @@
     // 如果校验通过，再执行后续的逻辑
     formEl.validate(async (valid) => {
       if (valid) {
-        const { data: res } = await service.get('/api/v1/select_poc_by_name', { params: { poc_name: curXjData.poc_name } })
-        // console.log(res);
-        if (res.code == 200) {
-          if (res.data.exists == 0) {
-            // 代表特征不重复，可以正常创建 ，走创建接口
-            console.log(curXjData)
+        // const { data: res } = await service.get('/api/v1/select_poc_by_name', { params: { poc_name: curXjData.poc_name } })
+        // // console.log(res);
+        // if (res.code == 200) {
+        //   if (res.data.exists == 0) {
+        // 代表特征不重复，可以正常创建 ，走创建接口
+        console.log(curXjData)
 
-            const formData = new FormData()
-            formData.append('file', fileList.value[0].raw)
-            formData.append('vul_name', curXjData.vul_name)
-            formData.append('vul_type', curXjData.vul_type)
-            formData.append('level', curXjData.level)
-            formData.append('poc_name', curXjData.poc_name)
-            formData.append('poc_type', curXjData.poc_type)
-            formData.append('count', curXjData.count)
-            const { data: res2 } = await service.post('/api/v1/create_poc', formData)
-            console.log(res2)
-            xjDialogVisible.value = false
-            searchClick()
-            ElMessage.success(res2.msg)
-          } else {
-            // 代表特征名称重复
-            ElMessage.error('该特征名称已存在，请重新输入！')
-          }
-        } else {
-          ElMessage.error(res.msg)
-        }
-      } else {
-        console.log('error submit!')
-        return false
+        const formData = new FormData()
+        formData.append('file', fileList.value[0].raw)
+        formData.append('vul_name', curXjData.vul_name)
+        formData.append('vul_type', curXjData.vul_type)
+        formData.append('level', curXjData.level)
+        formData.append('poc_name', curXjData.poc_name)
+        formData.append('poc_type', curXjData.poc_type)
+        formData.append('count', curXjData.count)
+        const { data: res2 } = await service.post('/api/v1/create_poc', formData)
+        console.log(res2)
+        xjDialogVisible.value = false
+        ElMessage.success(res2.msg)
+        searchClick()
+        loading.value = true
+        setTimeout(() => {
+          searchClick()
+          loading.value = false
+        }, 1000)
       }
+      //   } else {
+      //     ElMessage.error(res.msg)
+      //   }
+      // } else {
+      //   console.log('error submit!')
+      //   return false
+      // }
     })
   }
 
@@ -534,15 +548,27 @@
 
       if (valid) {
         const formData = new FormData()
-        formData.append('file', fileList.value[0].raw)
-        formData.append('vul_type', curXjData.vul_type)
-        formData.append('level', curXjData.lddjValue)
+        formData.append('poc_id', curBjData.poc_name)
+        // formData.append('file', )
+        formData.append('vul_name', curBjData.vul_name)
+        formData.append('vul_type', curBjData.vul_type)
+        formData.append('level', curBjData.level)
+        formData.append('poc_name', curBjData.poc_name)
+        formData.append('poc_type', curBjData.poc_type)
+        formData.append('count', curBjData.count)
+        formData.append('poc_file', fileList.value[0].raw)
+        formData.append('create_time', curBjData.create_time)
         const { data: res } = await service.post('/api/v1/update_poc', formData)
         console.log(res)
         bjDialogVisible.value = false
 
-        searchClick()
         ElMessage.success(res.msg)
+        searchClick()
+        loading.value = true
+        setTimeout(() => {
+          searchClick()
+          loading.value = false
+        }, 1000)
       } else {
         console.log('error submit!')
         return false
@@ -552,9 +578,11 @@
   }
   const downloadFile = () => {
     // window.location.href = curXqData.file_url
+    const startIndex = curXqData.value.file_url.indexOf('/api/v1/download_poc')
+    const substring = curXqData.value.file_url.substring(startIndex)
     service({
-      method: 'post',
-      url: curXqData.value.file_url,
+      method: 'get',
+      url: substring,
       responseType: 'blob',
     })
       .then(function (res) {

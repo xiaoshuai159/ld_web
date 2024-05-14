@@ -537,11 +537,13 @@
               asset_type: curXjData.asset_type,
               chara_name: curXjData.chara_name,
               star: curXjData.star,
-              // asset_unit: curXjData.asset_unit,
               asset_icp: curXjData.asset_icp,
               asset_level: curXjData.asset_level,
               asset_area: curXjData.asset_area,
               asset_data: curXjData.asset_data,
+              ma_name: curXjData.ma_name,
+              product_name: curXjData.product_name,
+              product_version: curXjData.product_name,
             }
             const { data: res2 } = await service.post('/api/v1/create_asset', formData)
             console.log(res2)
@@ -583,12 +585,16 @@
           asset_type: curBjData.asset_type,
           chara_id: curBjData.chara_id,
           asset_star: curBjData.asset_star,
+
           asset_level: curBjData.asset_level,
-          asset_area: curXjData.asset_area,
-          // asset_unit: curXjData.asset_unit,
-          asset_icp: curXjData.asset_icp,
-          asset_data: curXjData.asset_data,
-          labels: curXjData.labels,
+          asset_area: curBjData.asset_area,
+          asset_icp: curBjData.asset_icp,
+          asset_data: curBjData.asset_data,
+          labels: curBjData.labels,
+
+          ma_name: curBjData.ma_name,
+          product_name: curBjData.product_name,
+          product_version: curBjData.product_name,
         }
         const { data: res } = await service.post('/api/v1/update_asset', formData)
         console.log(res)

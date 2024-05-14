@@ -7,16 +7,12 @@
         <el-col :span="2"></el-col>
         <el-col :span="22">
           <div style="display: inline-block">
-            <span>资产名称：</span>
-            <el-input v-model="asset_name" style="width: 220px" placeholder="请输入" />
-            <span style="margin-left: 10px">资产类型：</span>
-            <el-select v-model="asset_type" placeholder="请选择" style="width: 220px">
-              <el-option v-for="item in zclxOptions" :key="item.value" :label="item.label" :value="item.value" />
-            </el-select>
-            <span style="margin-left: 10px">资产星级：</span>
-            <el-select v-model="asset_star" placeholder="请选择" style="width: 220px">
-              <el-option v-for="item in zcxjOptions" :key="item.value" :label="item.label" :value="item.value" />
-            </el-select>
+            <span>IP地址：</span>
+            <el-input v-model="ip" style="width: 220px" placeholder="请输入" />
+            <span style="margin-left: 10px">国家：</span>
+            <el-input v-model="country" style="width: 220px" placeholder="请输入" />
+            <span style="margin-left: 10px">省份：</span>
+            <el-input v-model="province" style="width: 220px" placeholder="请输入" />
           </div>
         </el-col>
       </el-row>
@@ -24,17 +20,15 @@
         <el-col :span="2"></el-col>
         <el-col :span="22">
           <div style="display: inline-block">
-            <span>相关资产重要程度：</span>
-            <el-select v-model="asset_level" placeholder="请选择" style="width: 220px">
-              <el-option v-for="item in xgzczycdOptions" :key="item.value" :label="item.label" :value="item.value" />
-            </el-select>
+            <span>城市：</span>
+            <el-input v-model="city" style="width: 220px" placeholder="请输入" />
             <!-- <span>特征编号：</span>
               <el-input v-model="tzbhInput" style="width: 220px" placeholder="请输入" /> -->
-            <span style="margin-left: 10px">资产归属地区：</span>
-            <el-input v-model="asset_area" style="width: 220px" placeholder="请输入" />
+            <span style="margin-left: 10px">运营商：</span>
+            <el-input v-model="ips" style="width: 220px" placeholder="请输入" />
 
-            <span style="margin-left: 10px">资产备案信息：</span>
-            <el-input v-model="asset_icp" style="width: 220px" placeholder="请输入" />
+            <span style="margin-left: 10px">归属单位：</span>
+            <el-input v-model="unit" style="width: 220px" placeholder="请输入" />
           </div>
         </el-col>
       </el-row>
@@ -81,20 +75,14 @@
           >
             <el-table-column type="selection" width="55" />
             <!-- <el-table-column prop="asset_id" label="特征编号" min-width="120" align="center" show-overflow-tooltip /> -->
-            <el-table-column prop="asset_name" label="资产名称" sortable min-width="150" align="center" show-overflow-tooltip />
-            <el-table-column prop="asset_type" label="资产类型" min-width="100" align="center" show-overflow-tooltip />
-            <el-table-column prop="star" label="评价星级" sortable min-width="180" align="center">
-              <template #default="{ row }">
-                <el-rate v-model="row.star" disabled show-score text-color="#ff9900" score-template="{value}星" />
-              </template>
-            </el-table-column>
-            <el-table-column prop="asset_level" label="相关资产重要程度" sortable min-width="180" align="center" show-overflow-tooltip />
-            <el-table-column prop="ma_name" label="厂商名称" min-width="130" align="center" show-overflow-tooltip />
-            <el-table-column prop="product_name" label="产品名称" min-width="130" align="center" show-overflow-tooltip />
-            <el-table-column prop="product_version" label="产品版本" min-width="130" align="center" show-overflow-tooltip />
-            <el-table-column prop="asset_unit" label="资产归属单位" min-width="180" align="center" show-overflow-tooltip />
-            <el-table-column prop="asset_icp" label="资产备案信息" min-width="180" align="center" show-overflow-tooltip />
-            <el-table-column prop="labels" label="资产标签" min-width="180" align="center" show-overflow-tooltip />
+            <!-- <el-table-column prop="asset_unit_id" label="资产归属id" sortable min-width="150" align="center"
+              show-overflow-tooltip /> -->
+            <el-table-column prop="ip" label="IP地址" min-width="150" align="center" show-overflow-tooltip />
+            <el-table-column prop="country" label="国家" min-width="100" align="center" show-overflow-tooltip />
+            <el-table-column prop="province" label="省份" min-width="180" align="center" show-overflow-tooltip />
+            <el-table-column prop="city" label="城市" min-width="130" align="center" show-overflow-tooltip />
+            <el-table-column prop="ips" label="运营商" min-width="130" align="center" show-overflow-tooltip />
+            <el-table-column prop="unit" label="归属单位" min-width="130" align="center" show-overflow-tooltip />
             <el-table-column prop="operator" label="操作" min-width="140" align="center" fixed="right">
               <template #default="scope">
                 <el-button type="primary" size="small" link @click="xqClick(scope.row)"> 详情 </el-button>
@@ -127,86 +115,41 @@
     </el-row>
     <el-dialog v-model="xqDialogVisible" title="详情信息" width="35%">
       <div class="xqDialog">
-        <span>资产特征id</span><span>{{ curXqData.asset_id }}</span
+        <span>资产归属id</span><span>{{ curXqData.asset_unit_id }}</span
         ><br />
-        <span>资产名称</span><span>{{ curXqData.asset_name }}</span
+        <span>IP地址</span><span>{{ curXqData.ip }}</span
         ><br />
-        <span>资产类型</span><span>{{ curXqData.asset_type }}</span
+        <span>国家</span><span>{{ curXqData.country }}</span
         ><br />
-        <span>评价星级</span
-        ><span> <el-rate v-model="curXqData.star" disabled show-score text-color="#ff9900" score-template="{value}星" /> </span><br />
-        <span>相关资产重要程度</span><span>{{ curXqData.asset_level }}</span
+        <span>省份</span><span>{{ curXqData.province }}</span
         ><br />
-        <span>厂商名称</span><span>{{ curXqData.ma_name }}</span
+        <span>城市</span><span>{{ curXqData.city }}</span
         ><br />
-        <span>产品名称</span><span>{{ curXqData.product_name }}</span
+        <span>运营商</span><span>{{ curXqData.ips }}</span
         ><br />
-        <span>产品版本</span><span>{{ curXqData.product_version }}</span
+        <span>归属单位</span><span>{{ curXqData.unit }}</span
         ><br />
-        <span>资产归属单位</span><span>{{ curXqData.asset_unit }}</span
-        ><br />
-        <span>资产备案信息</span><span>{{ curXqData.asset_icp }}</span
-        ><br />
-        <span>资产标签</span><span>{{ curXqData.labels }}</span>
       </div>
     </el-dialog>
     <el-dialog v-model="xjDialogVisible" title="新建" width="30%">
       <el-form ref="xjForm" :model="curXjData" :rules="rules" label-width="140px">
-        <el-form-item label="资产名称" prop="asset_name">
-          <el-input v-model="curXjData.asset_name" placeholder="请输入资产名称" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
+        <el-form-item label="IP地址" prop="ip">
+          <el-input v-model="curXjData.ip" placeholder="请输入ip" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
         </el-form-item>
-        <el-form-item label="资产类型" prop="asset_type">
-          <el-select v-model="curXjData.asset_type" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
-            <el-option v-for="item in tzlxOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
+        <el-form-item label="国家" prop="country">
+          <el-input v-model="curXjData.country" placeholder="请输入国家" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
         </el-form-item>
-        <el-form-item label="评价星级" prop="star">
-          <el-select v-model="curXjData.star" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
-            <el-option v-for="item in tzdjOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
+        <el-form-item label="省份" prop="province">
+          <el-input v-model="curXjData.province" placeholder="请输入省份" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
         </el-form-item>
-        <el-form-item label="相关资产重要程度" prop="asset_level">
-          <el-select v-model="curXjData.asset_level" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
-            <el-option v-for="item in zycdOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
+        <el-form-item label="城市" prop="city">
+          <el-input v-model="curXjData.city" placeholder="请输入城市" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
         </el-form-item>
-        <el-form-item label="厂商名称" prop="ma_name">
-          <el-input v-model="curXjData.ma_name" placeholder="请输入厂商名称" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
+        <el-form-item label="运营商" prop="ips">
+          <el-input v-model="curXjData.ips" placeholder="请输入运营商" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
         </el-form-item>
-        <el-form-item label="产品名称" prop="product_name">
-          <el-input
-            v-model="curXjData.product_name"
-            placeholder="请输入产品名称"
-            style="width: 220px"
-            @keyup.enter="handleSubmit(xjForm)"
-          />
-        </el-form-item>
-        <el-form-item label="产品版本" prop="product_version">
-          <el-input
-            v-model="curXjData.product_version"
-            placeholder="请输入产品版本"
-            style="width: 220px"
-            @keyup.enter="handleSubmit(xjForm)"
-          />
-        </el-form-item>
-        <el-form-item label="资产归属单位" prop="asset_unit">
-          <el-input
-            v-model="curXjData.asset_unit"
-            placeholder="请输入资产归属单位"
-            style="width: 220px"
-            @keyup.enter="handleSubmit(xjForm)"
-          />
-        </el-form-item>
-        <el-form-item label="资产备案信息" prop="asset_icp">
-          <el-input
-            v-model="curXjData.asset_icp"
-            placeholder="请输入资产备案信息"
-            style="width: 220px"
-            @keyup.enter="handleSubmit(xjForm)"
-          />
-        </el-form-item>
-        <el-form-item label="资产标签" prop="labels">
-          <el-input v-model="curXjData.labels" placeholder="请输入资产标签" style="width: 220px" type="textarea" :rows="3" />
+        <el-form-item label="归属单位" prop="unit">
+          <el-input v-model="curXjData.unit" placeholder="请输入归属单位" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -218,61 +161,31 @@
     </el-dialog>
     <el-dialog v-model="bjDialogVisible" title="编辑" width="30%">
       <el-form ref="bjForm" :model="curBjData" :rules="rules" label-width="140px">
-        <el-form-item label="资产名称" prop="asset_name">
-          <el-input v-model="curBjData.asset_name" placeholder="请输入资产名称" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
-        </el-form-item>
-        <el-form-item label="资产类型" prop="asset_type">
-          <el-select v-model="curBjData.asset_type" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
-            <el-option v-for="item in tzlxOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="评价星级" prop="star">
-          <el-select v-model="curBjData.star" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
-            <el-option v-for="item in tzdjOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="相关资产重要程度" prop="asset_level">
-          <el-select v-model="curBjData.asset_level" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
-            <el-option v-for="item in zycdOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="厂商名称" prop="ma_name">
-          <el-input v-model="curBjData.ma_name" placeholder="请输入厂商名称" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
-        </el-form-item>
-        <el-form-item label="产品名称" prop="product_name">
+        <el-form-item label="资产归属id" prop="asset_unit_id">
           <el-input
-            v-model="curBjData.product_name"
-            placeholder="请输入产品名称"
+            v-model="curBjData.asset_unit_id"
+            placeholder="请输入资产归属id"
             style="width: 220px"
             @keyup.enter="handleSubmit2(bjForm)"
           />
         </el-form-item>
-        <el-form-item label="产品版本" prop="product_version">
-          <el-input
-            v-model="curBjData.product_version"
-            placeholder="请输入产品版本"
-            style="width: 220px"
-            @keyup.enter="handleSubmit2(bjForm)"
-          />
+        <el-form-item label="IP地址" prop="ip">
+          <el-input v-model="curBjData.ip" placeholder="请输入ip" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
         </el-form-item>
-        <el-form-item label="资产归属单位" prop="asset_unit">
-          <el-input
-            v-model="curBjData.asset_unit"
-            placeholder="请输入资产归属单位"
-            style="width: 220px"
-            @keyup.enter="handleSubmit2(bjForm)"
-          />
+        <el-form-item label="国家" prop="country">
+          <el-input v-model="curBjData.country" placeholder="请输入国家" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
         </el-form-item>
-        <el-form-item label="资产备案信息" prop="asset_icp">
-          <el-input
-            v-model="curBjData.asset_icp"
-            placeholder="请输入资产备案信息"
-            style="width: 220px"
-            @keyup.enter="handleSubmit2(bjForm)"
-          />
+        <el-form-item label="省份" prop="province">
+          <el-input v-model="curBjData.province" placeholder="请输入省份" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
         </el-form-item>
-        <el-form-item label="资产标签" prop="labels">
-          <el-input v-model="curBjData.labels" placeholder="请输入资产标签" style="width: 220px" type="textarea" :rows="3" />
+        <el-form-item label="城市" prop="city">
+          <el-input v-model="curBjData.city" placeholder="请输入城市" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
+        </el-form-item>
+        <el-form-item label="运营商" prop="ips">
+          <el-input v-model="curBjData.ips" placeholder="请输入运营商" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
+        </el-form-item>
+        <el-form-item label="归属单位" prop="unit">
+          <el-input v-model="curBjData.unit" placeholder="请输入归属单位" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -306,13 +219,16 @@
   import service from '@/api/request'
   import { ElMessage, type FormInstance, ElMessageBox } from 'element-plus'
   const rules = ref({
-    asset_id: [{ required: true, message: '请输入特征id', trigger: 'change' }],
-    asset_name: [{ required: true, message: '请输入特征名称', trigger: 'blur' }],
-    asset_type: [{ required: true, message: '请选择特征类型', trigger: 'change' }],
-    star: [{ required: true, message: '请选择特征评价等级', trigger: 'change' }],
-    asset_level: [{ required: true, message: '请选择相关资产重要等级', trigger: 'change' }],
-    query_info: [{ required: true, message: '请输入查询语法', trigger: 'change' }],
+    ip: [{ required: true, message: '请输入ip', trigger: 'change' }],
+    country: [{ required: true, message: '请输入国家', trigger: 'blur' }],
+    unit: [{ required: true, message: '请输入归属单位', trigger: 'change' }],
   })
+  let ip = ref('')
+  let country = ref('')
+  let province = ref('')
+  let city = ref('')
+  let ips = ref('')
+  let unit = ref('')
   let asset_name = ref('')
   let asset_type = ref('')
   let asset_star = ref('')
@@ -380,22 +296,8 @@
     { label: 'URL特征', value: 'URL特征' },
     { label: 'IP特征', value: 'IP特征' },
   ])
-  let curXjData: any = reactive({
-    asset_name: '',
-    asset_type: '',
-    star: '',
-    asset_level: '',
-    query_info: '',
-    description: '',
-  })
-  let curBjData: any = reactive({
-    asset_name: '',
-    asset_type: '',
-    star: '',
-    asset_level: '',
-    query_info: '',
-    description: '',
-  })
+  let curXjData: any = reactive({})
+  let curBjData: any = reactive({})
   onMounted(() => {
     searchClick()
     fileInputRef.value = document.querySelector('input[type=file]')
@@ -412,7 +314,7 @@
     file = event.target.files[0]
     const formData = new FormData()
     formData.append('file', file)
-    service.post('/api/v1/upload_asset', formData).then(({ data: res }) => {
+    service.post('/api/v1/upload_asset_unit', formData).then(({ data: res }) => {
       console.log(res)
       if (res.code == 200) {
         ElMessage.success('上传成功')
@@ -457,25 +359,25 @@
   const searchClick = async () => {
     loading.value = true
     const reqData = {
-      asset_name: asset_name.value,
-      asset_type: asset_type.value,
-      asset_star: asset_star.value,
-      asset_level: asset_level.value,
-      asset_area: asset_area.value,
-      asset_icp: asset_icp.value,
+      ip: ip.value,
+      country: country.value,
+      province: province.value,
+      city: city.value,
+      ips: ips.value,
+      unit: unit.value,
     }
-    const { data: res } = await service.get('/api/v1/search_asset', { params: reqData })
+    const { data: res } = await service.get('/api/v1/search_asset_unit', { params: reqData })
     // console.log(res)
     tableData.value = res.data
     loading.value = false
   }
   const resetClick = () => {
-    asset_name.value = ''
-    asset_type.value = ''
-    asset_star.value = ''
-    asset_level.value = ''
-    asset_area.value = ''
-    asset_icp.value = ''
+    ip.value = ''
+    country.value = ''
+    province.value = ''
+    city.value = ''
+    ips.value = ''
+    unit.value = ''
     searchClick()
   }
   const xjForm = ref<FormInstance>()
@@ -488,34 +390,37 @@
     // 如果校验通过，再执行后续的逻辑
     formEl.validate(async (valid) => {
       if (valid) {
-        const { data: res } = await service.get('/api/v1/search_asset_by_name', { params: { asset_name: curXjData.asset_name } })
-        // console.log(res);
-        if (res.code == 200) {
-          if (res.data.exists == 0) {
-            // 代表特征不重复，可以正常创建 ，走创建接口
-            const formData = {
-              asset_name: curXjData.asset_name,
-              asset_type: curXjData.asset_type,
-              star: curXjData.star,
-              asset_level: curXjData.asset_level,
-              query_info: curXjData.query_info,
-              description: curXjData.description,
-              ma_name: curXjData.ma_name,
-              product_name: curXjData.product_name,
-              product_version: curXjData.product_version,
-            }
-            const { data: res2 } = await service.post('/api/v1/create_asset', formData)
-            console.log(res2)
-            xjDialogVisible.value = false
-            searchClick()
-            ElMessage.success(res2.msg)
-          } else {
-            // 代表特征名称重复
-            ElMessage.error('该特征名称已存在，请重新输入！')
-          }
-        } else {
-          ElMessage.error(res.msg)
+        // const { data: res } = await service.get('/api/v1/search_asset_unit_by_name', { params: { asset_name: curXjData.asset_name } })
+        // // console.log(res);
+        // if (res.code == 200) {
+        //   if (res.data.exists == 0) {
+        //     // 代表特征不重复，可以正常创建 ，走创建接口
+        const formData = {
+          ip: curXjData.ip,
+          country: curXjData.country,
+          province: curXjData.province,
+          city: curXjData.city,
+          ips: curXjData.ips,
+          unit: curXjData.unit,
         }
+        const { data: res2 } = await service.post('/api/v1/create_asset_unit', formData)
+        console.log(res2)
+        xjDialogVisible.value = false
+
+        ElMessage.success(res2.msg)
+        searchClick()
+        loading.value = true
+        setTimeout(() => {
+          searchClick()
+          loading.value = false
+        }, 1000)
+        //   } else {
+        //     // 代表特征名称重复
+        //     ElMessage.error('该特征名称已存在，请重新输入！')
+        //   }
+        // } else {
+        //   ElMessage.error(res.msg)
+        // }
       } else {
         console.log('error submit!')
         return false
@@ -533,23 +438,25 @@
 
       if (valid) {
         const formData = {
-          asset_id: curBjData.asset_id,
-          asset_name: curBjData.asset_name,
-          asset_type: curBjData.asset_type,
-          star: curBjData.star,
-          asset_level: curBjData.asset_level,
-          query_info: curBjData.query_info,
-          description: curBjData.description,
-          ma_name: curBjData.ma_name,
-          product_name: curBjData.product_name,
-          product_version: curBjData.product_version,
+          asset_unit_id: curBjData.asset_unit_id,
+          ip: curBjData.ip,
+          country: curBjData.country,
+          province: curBjData.province,
+          city: curBjData.city,
+          ips: curBjData.ips,
+          unit: curBjData.unit,
         }
-        const { data: res } = await service.post('/api/v1/update_asset', formData)
+        const { data: res } = await service.post('/api/v1/update_asset_unit', formData)
         console.log(res)
         bjDialogVisible.value = false
 
-        searchClick()
         ElMessage.success(res.msg)
+        searchClick()
+        loading.value = true
+        setTimeout(() => {
+          searchClick()
+          loading.value = false
+        }, 1000)
       } else {
         console.log('error submit!')
         return false
@@ -558,8 +465,8 @@
     // bjDialogVisible.value = false // 关闭对话框
   }
   const del = async (row) => {
-    const { asset_id } = row
-    const assetIds = [asset_id]
+    const { asset_unit_id } = row
+    const assetIds = [asset_unit_id]
 
     ElMessageBox.confirm('是否确定删除此条数据?', 'Warning', {
       confirmButtonText: '确认',
@@ -567,13 +474,18 @@
       type: 'warning',
     })
       .then(async () => {
-        const { data: res } = await service.post('/api/v1/delete_asset', { asset_id: assetIds })
+        const { data: res } = await service.post('/api/v1/delete_asset_unit', { asset_unit_id: assetIds })
         if (res.code == 200) {
           ElMessage({
             type: 'success',
             message: '删除成功',
           })
           searchClick()
+          loading.value = true
+          setTimeout(() => {
+            searchClick()
+            loading.value = false
+          }, 1000)
         }
       })
       .catch(() => {
@@ -584,20 +496,25 @@
       })
   }
   const multDel = async () => {
-    const asset_id = multipleSelection.value.map((item) => item.asset_id)
+    const asset_unit_id = multipleSelection.value.map((item) => item.asset_unit_id)
     ElMessageBox.confirm('是否确定删除选中数据?', 'Warning', {
       confirmButtonText: '确认',
       cancelButtonText: '取消',
       type: 'warning',
     })
       .then(async () => {
-        const { data: res } = await service.post('/api/v1/delete_asset', { asset_id })
+        const { data: res } = await service.post('/api/v1/delete_asset_unit', { asset_unit_id })
         if (res.code == 200) {
           ElMessage({
             type: 'success',
             message: '删除成功',
           })
           searchClick()
+          loading.value = true
+          setTimeout(() => {
+            searchClick()
+            loading.value = false
+          }, 1000)
         }
       })
       .catch(() => {
@@ -608,13 +525,13 @@
       })
   }
   const multPut = () => {
-    const asset_id = multipleSelection.value.map((item) => item.asset_id)
-    console.log(asset_id)
+    const asset_unit_id = multipleSelection.value.map((item) => item.asset_unit_id)
+    console.log(asset_unit_id)
 
     service({
       method: 'post',
-      url: '/api/v1/export_asset',
-      data: { asset_id },
+      url: '/api/v1/export_asset_unit',
+      data: { asset_unit_id },
       responseType: 'blob',
     })
       .then(function (res) {
@@ -644,7 +561,7 @@
     // 例如：
     service({
       method: 'get',
-      url: '/api/v1/export_asset_template',
+      url: '/api/v1/export_asset_unit_template',
       responseType: 'blob',
     })
       .then((res) => {
