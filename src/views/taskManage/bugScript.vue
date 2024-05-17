@@ -3,7 +3,7 @@
     <div class="my-header">漏洞探测脚本管理表格</div>
     <el-divider></el-divider>
     <div class="selectClass" style="margin-top: 15px">
-      <el-row>
+      <el-row style="margin-top: 10px">
         <el-col :span="2"></el-col>
         <el-col :span="22">
           <div style="display: inline-block">
@@ -20,10 +20,9 @@
           </div>
         </el-col>
       </el-row>
-
       <el-row style="margin-top: 10px">
         <el-col :span="2"></el-col>
-        <el-col :span="18">
+        <el-col :span="22">
           <div>
             <span>漏洞等级：</span>
             <el-select v-model="lddjValue" placeholder="请选择" style="width: 220px">
@@ -33,6 +32,15 @@
             <el-select v-model="vul_type" placeholder="请选择" style="width: 220px">
               <el-option v-for="item in ldlxOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
+            <span style="margin-left: 10px">日期选择：</span>
+            <el-date-picker
+              v-model="dateValue"
+              type="datetimerange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              style="transform: translateY(2px); width: 340px"
+            />
           </div>
         </el-col>
       </el-row>
@@ -41,8 +49,9 @@
       <el-col :span="1"></el-col>
       <el-col :span="19">
         <el-button type="primary" :icon="Plus" @click="xjClick">新建</el-button>
-        <el-button @click="multDel">批量删除</el-button>
+        <el-button @click="multDel('mult')">批量删除</el-button>
         <el-button @click="multPut">批量导出</el-button>
+        <el-button @click="multDel('all')">全部删除</el-button>
       </el-col>
       <el-col :span="4">
         <div>
@@ -66,12 +75,13 @@
           >
             <el-table-column type="selection" width="55" />
             <!-- <el-table-column prop="poc_id" label="poc编号" min-width="80" align="center" /> -->
-            <el-table-column prop="vul_name" label="脚本名称" min-width="100" align="center" />
-            <el-table-column prop="vul_type" label="脚本类型" min-width="180" align="center" />
-            <el-table-column prop="create_time" label="创建时间" min-width="180" align="center" />
-            <el-table-column prop="level" label="漏洞等级" min-width="120" align="center" />
-            <el-table-column prop="vul_type" label="漏洞类型" min-width="120" align="center" />
-            <el-table-column prop="count" label="漏洞数量" min-width="100" align="center" />
+            <el-table-column prop="poc_name" label="脚本名称" min-width="100" align="center" show-overflow-tooltip />
+            <el-table-column prop="poc_type" label="脚本类型" min-width="180" align="center" show-overflow-tooltip />
+            <el-table-column prop="create_time" label="创建时间" min-width="180" align="center" show-overflow-tooltip />
+            <el-table-column prop="level" label="相关漏洞等级" min-width="120" align="center" show-overflow-tooltip />
+            <el-table-column prop="vul_name" label="漏洞名称" min-width="120" align="center" show-overflow-tooltip />
+            <el-table-column prop="vul_type" label="漏洞类型" min-width="120" align="center" show-overflow-tooltip />
+            <el-table-column prop="count" label="相关漏洞数量" min-width="120" align="center" show-overflow-tooltip />
             <el-table-column prop="operator" label="操作" min-width="200px" align="center" fixed="right">
               <template #default="scope">
                 <el-button type="primary" size="small" link @click="xqClick(scope.row)"> 详情 </el-button>
@@ -124,9 +134,7 @@
         ><br />
         <span>漏洞类型</span><span>{{ curXqData.vul_type }}</span
         ><br />
-        <span>相关漏洞数量</span><span>{{ curXqData.count }}</span
-        ><br />
-        <span>脚本</span><span style="color: blue; cursor: pointer" @click="downloadFile">下载</span>
+        <span>附件</span><span style="color: blue; cursor: pointer" @click="downloadFile">下载</span>
         <!-- <span>脚本类型</span><span>{{ curXqData.poc_type }}</span
         ><br /> -->
       </div>
@@ -136,14 +144,14 @@
         <el-form-item label="脚本名称" prop="poc_name">
           <el-input
             v-model="curXjData.poc_name"
-            placeholder="请输入漏洞名称"
+            placeholder="请输入脚本名称"
             style="width: 220px"
             @keyup.enter="handleSubmit(xjForm)"
           ></el-input>
         </el-form-item>
         <el-form-item label="脚本类型" prop="poc_type">
           <el-select v-model="curXjData.poc_type" placeholder="请选择脚本类型" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
-            <el-option v-for="item in ldlxOptions" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in jblxOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="漏洞等级" prop="level">
@@ -201,7 +209,7 @@
         </el-form-item>
         <el-form-item label="脚本类型" prop="poc_type">
           <el-select v-model="curBjData.poc_type" placeholder="请选择脚本类型" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
-            <el-option v-for="item in ldlxOptions" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in jblxOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="漏洞等级" prop="level">
@@ -268,9 +276,11 @@
   import { ref, reactive, onBeforeMount, Ref, onMounted } from 'vue'
   import { ElMessage, type FormInstance, ElMessageBox, type UploadProps, type UploadUserFile } from 'element-plus'
   import service from '@/api/request'
+  import dayjs from 'dayjs'
   const fileList = ref<UploadUserFile[]>([])
   const fileList2 = ref<UploadUserFile[]>([])
   let loading = ref(false)
+  let dateValue = ref('')
   let curXjData: any = reactive({})
   let curBjData: any = reactive({})
   let curXqData: any = ref({})
@@ -290,8 +300,8 @@
   const jbhxInput = ref('')
   const jblxValue = ref('')
   const jblxOptions = ref([
-    { label: 'Shell', value: 'Shell' },
-    { label: 'Lua', value: 'Lua' },
+    // { label: 'Shell', value: 'Shell' },
+    // { label: 'Lua', value: 'Lua' },
     { label: 'Python', value: 'Python' },
     { label: 'Java', value: 'Java' },
     { label: 'Golang', value: 'Golang' },
@@ -309,7 +319,7 @@
     { label: '通用型漏洞', value: '通用型漏洞' },
     { label: '事件型漏洞', value: '事件型漏洞' },
   ])
-  let tableData = ref([{}, {}])
+  let tableData = ref([])
   let curChain = ref('')
   const pagination = reactive({
     currentPage: 1,
@@ -332,6 +342,8 @@
   }
   const searchClick = async () => {
     const queryData = {
+      start_time: dateValue.value.length == 0 ? '' : dayjs(dateValue.value[0]).format('YYYY-MM-DD HH:mm:ss'),
+      end_time: dateValue.value.length == 0 ? '' : dayjs(dateValue.value[1]).format('YYYY-MM-DD HH:mm:ss'),
       poc_name: jbmcInput.value,
       poc_hash: jbhxInput.value,
       poc_type: jblxValue.value,
@@ -345,6 +357,7 @@
     }
   }
   const resetClick = () => {
+    dateValue.value = ''
     jbmcInput.value = ''
     jbhxInput.value = ''
     jblxValue.value = ''
@@ -358,7 +371,7 @@
     fileInputRef.value = document.querySelector('input[type=file]')
   })
   const xqClick = (row) => {
-    console.log(row)
+    // console.log(row)
     curXqData = row
     xqDialogVisible.value = true
   }
@@ -394,8 +407,14 @@
         })
       })
   }
-  const multDel = async () => {
-    const poc_id = multipleSelection.value.map((item) => item.poc_id)
+  const multDel = async (flag: String) => {
+    let poc_id: Array<String>
+    if (flag == 'mult') {
+      poc_id = multipleSelection.value.map((item) => item.poc_id)
+    } else {
+      poc_id = tableData.value.map((item) => item.poc_id)
+    }
+    // const poc_id = multipleSelection.value.map((item) => item.poc_id)
     ElMessageBox.confirm('是否确定删除选中数据?', 'Warning', {
       confirmButtonText: '确认',
       cancelButtonText: '取消',
@@ -483,7 +502,8 @@
     })
   }
   const xjClick = () => {
-    wjDialogVisible.value = true
+    // wjDialogVisible.value = true
+    xjDialogVisible.value = true
   }
   const dtClick = () => {
     wjDialogVisible.value = false
@@ -577,6 +597,8 @@
     // bjDialogVisible.value = false // 关闭对话框
   }
   const downloadFile = () => {
+    console.log(curXqData.value.file_url)
+
     // window.location.href = curXqData.file_url
     const startIndex = curXqData.value.file_url.indexOf('/api/v1/download_poc')
     const substring = curXqData.value.file_url.substring(startIndex)
@@ -603,6 +625,12 @@
   }
 </script>
 <style lang="scss" scoped>
+  .selectClass span {
+    display: inline-block;
+    text-align: right;
+    width: 70px;
+  }
+
   .xjDialog > span {
     display: inline-block;
     color: #999999;

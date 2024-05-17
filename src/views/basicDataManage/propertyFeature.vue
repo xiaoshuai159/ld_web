@@ -7,6 +7,19 @@
         <el-col :span="2"></el-col>
         <el-col :span="22">
           <div style="display: inline-block">
+            <span>厂商名称：</span>
+            <el-input v-model="ma_name" style="width: 220px" placeholder="请输入" />
+            <span style="margin-left: 10px">产品名称：</span>
+            <el-input v-model="product_name" style="width: 220px" placeholder="请输入" />
+            <span style="margin-left: 10px">产品版本：</span>
+            <el-input v-model="product_version" style="width: 220px" placeholder="请输入" />
+          </div>
+        </el-col>
+      </el-row>
+      <el-row style="margin-top: 10px">
+        <el-col :span="2"></el-col>
+        <el-col :span="22">
+          <div style="display: inline-block">
             <span>特征等级：</span>
             <el-select v-model="tzdjValue" placeholder="请选择" style="width: 220px">
               <el-option v-for="item in tzdjOptions" :key="item.value" :label="item.label" :value="item.value" />
@@ -36,9 +49,15 @@
             <el-select v-model="tzdjValue" placeholder="请选择" style="width: 220px">
               <el-option v-for="item in tzdjOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select> -->
-            <!-- <span style="margin-left: 10px">日期选择：</span>
-            <el-date-picker v-model="dateValue" type="daterange" range-separator="至" start-placeholder="开始日期"
-              end-placeholder="结束日期" style="transform: translateY(2px);"/> -->
+            <span style="margin-left: 10px">日期选择：</span>
+            <el-date-picker
+              v-model="dateValue"
+              type="datetimerange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              style="transform: translateY(2px)"
+            />
           </div>
         </el-col>
       </el-row>
@@ -47,8 +66,9 @@
       <el-col :span="1"></el-col>
       <el-col :span="19">
         <el-button type="primary" :icon="Plus" @click="xjClick">新建</el-button>
-        <el-button @click="multDel">批量删除</el-button>
+        <el-button @click="multDel('mult')">批量删除</el-button>
         <el-button @click="multPut">批量导出</el-button>
+        <el-button @click="multDel('all')">全部删除</el-button>
       </el-col>
       <el-col :span="4">
         <div>
@@ -72,18 +92,19 @@
           >
             <el-table-column type="selection" width="55" />
             <!-- <el-table-column prop="chara_id" label="特征编号" min-width="120" align="center" show-overflow-tooltip /> -->
+            <el-table-column prop="ma_name" label="厂商名称" min-width="130" align="center" show-overflow-tooltip />
+            <el-table-column prop="product_name" label="产品名称" min-width="130" align="center" show-overflow-tooltip />
+            <el-table-column prop="product_version" label="产品版本" min-width="130" align="center" show-overflow-tooltip />
             <el-table-column prop="chara_name" label="特征名称" sortable min-width="150" align="center" show-overflow-tooltip />
             <el-table-column prop="chara_type" label="特征类型" min-width="100" align="center" show-overflow-tooltip />
             <el-table-column prop="create_time" label="创建时间" sortable min-width="170" align="center" show-overflow-tooltip />
             <el-table-column prop="star" label="特征等级评价" sortable min-width="180" align="center">
               <template #default="{ row }">
-                <el-rate v-model="row.star" disabled show-score text-color="#ff9900" score-template="{value}星" />
+                <el-rate v-model="row.star" show-score text-color="#ff9900" score-template="{value}星" @change="starChange(row)" />
               </template>
             </el-table-column>
             <el-table-column prop="chara_level" label="相关资产重要等级" sortable min-width="180" align="center" show-overflow-tooltip />
-            <el-table-column prop="ma_name" label="厂商名称" min-width="130" align="center" show-overflow-tooltip />
-            <el-table-column prop="product_name" label="产品名称" min-width="130" align="center" show-overflow-tooltip />
-            <el-table-column prop="product_version" label="产品版本" min-width="130" align="center" show-overflow-tooltip />
+
             <el-table-column prop="operator" label="操作" min-width="140" align="center" fixed="right">
               <template #default="scope">
                 <el-button type="primary" size="small" link @click="xqClick(scope.row)"> 详情 </el-button>
@@ -116,6 +137,12 @@
     </el-row>
     <el-dialog v-model="xqDialogVisible" title="详情信息" width="35%">
       <div class="xqDialog">
+        <span>厂商名称</span><span>{{ curXqData.ma_name }}</span
+        ><br />
+        <span>产品名称</span><span>{{ curXqData.product_name }}</span
+        ><br />
+        <span>产品版本</span><span>{{ curXqData.product_version }}</span
+        ><br />
         <span>特征编号</span><span>{{ curXqData.chara_id }}</span
         ><br />
         <span>特征名称</span><span>{{ curXqData.chara_name }}</span
@@ -126,12 +153,7 @@
         ><span> <el-rate v-model="curXqData.star" disabled show-score text-color="#ff9900" score-template="{value}星" /> </span><br />
         <span>特征资产重要等级</span><span>{{ curXqData.chara_level }}</span
         ><br />
-        <span>厂商名称</span><span>{{ curXqData.ma_name }}</span
-        ><br />
-        <span>产品名称</span><span>{{ curXqData.product_name }}</span
-        ><br />
-        <span>产品版本</span><span>{{ curXqData.product_version }}</span
-        ><br />
+
         <span>查询语法</span><span>{{ curXqData.query_info }}</span
         ><br />
         <span>特征创建/上传日期</span><span>{{ curXqData.create_time }}</span
@@ -195,7 +217,13 @@
     <el-dialog v-model="bjDialogVisible" title="编辑" width="30%">
       <el-form ref="bjForm" :model="curBjData" :rules="rules" label-width="140px">
         <el-form-item label="特征id" prop="chara_name">
-          <el-input v-model="curBjData.chara_id" placeholder="请输入特征id" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
+          <el-input
+            v-model="curBjData.chara_id"
+            disabled
+            placeholder="请输入特征id"
+            style="width: 220px"
+            @keyup.enter="handleSubmit2(bjForm)"
+          />
         </el-form-item>
         <el-form-item label="特征名称" prop="chara_name">
           <el-input v-model="curBjData.chara_name" placeholder="请输入特征名称" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
@@ -216,14 +244,14 @@
           </el-select>
         </el-form-item>
         <el-form-item label="厂商名称" prop="ma_name">
-          <el-input v-model="curBjData.ma_name" placeholder="请输入厂商名称" style="width: 220px" @keyup.enter="handleSubmit2(xjForm)" />
+          <el-input v-model="curBjData.ma_name" placeholder="请输入厂商名称" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
         </el-form-item>
         <el-form-item label="产品名称" prop="product_name">
           <el-input
             v-model="curBjData.product_name"
             placeholder="请输入产品名称"
             style="width: 220px"
-            @keyup.enter="handleSubmit2(xjForm)"
+            @keyup.enter="handleSubmit2(bjForm)"
           />
         </el-form-item>
         <el-form-item label="产品版本" prop="product_version">
@@ -231,11 +259,11 @@
             v-model="curBjData.product_version"
             placeholder="请输入产品版本"
             style="width: 220px"
-            @keyup.enter="handleSubmit2(xjForm)"
+            @keyup.enter="handleSubmit2(bjForm)"
           />
         </el-form-item>
         <el-form-item label="查询语法" prop="query_info">
-          <el-input v-model="curBjData.query_info" placeholder="请输入查询语法" style="width: 220px" @keyup.enter="handleSubmit2(xjForm)" />
+          <el-input v-model="curBjData.query_info" placeholder="请输入查询语法" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
         </el-form-item>
         <el-form-item label="特征描述" prop="description">
           <el-input v-model="curBjData.description" placeholder="请输入特征名称" style="width: 220px" type="textarea" :rows="3" />
@@ -271,6 +299,7 @@
   import { ref, reactive, onMounted, Ref } from 'vue'
   import service from '@/api/request'
   import { ElMessage, type FormInstance, ElMessageBox } from 'element-plus'
+  import dayjs from 'dayjs'
   const rules = ref({
     chara_id: [{ required: true, message: '请输入特征id', trigger: 'change' }],
     chara_name: [{ required: true, message: '请输入特征名称', trigger: 'blur' }],
@@ -279,6 +308,10 @@
     chara_level: [{ required: true, message: '请选择相关资产重要等级', trigger: 'change' }],
     query_info: [{ required: true, message: '请输入查询语法', trigger: 'change' }],
   })
+  let ma_name = ref('')
+  let product_name = ref('')
+  let product_version = ref('')
+  let dateValue = ref('')
   let loading = ref(false)
   let xqDialogVisible = ref(false)
   let xjDialogVisible = ref(false)
@@ -310,7 +343,7 @@
     { label: '生效', value: 1 },
     { label: '失效', value: 0 },
   ])
-  let tableData = ref([])
+  let tableData = reactive([])
   let curXqData: any = ref({})
   const xqClick = (row) => {
     console.log(row)
@@ -342,6 +375,7 @@
     searchClick()
     fileInputRef.value = document.querySelector('input[type=file]')
   })
+
   let wjDialogVisible = ref(false)
   // 创建 ref 引用
   const fileInputRef = ref(null)
@@ -362,11 +396,21 @@
         file = null
         event.target.value = ''
         searchClick()
+        loading.value = true
+        setTimeout(() => {
+          searchClick()
+          loading.value = false
+        }, 1000)
       } else {
         ElMessage.error(res.msg)
         file = null
         event.target.value = ''
         searchClick()
+        loading.value = true
+        setTimeout(() => {
+          searchClick()
+          loading.value = false
+        }, 1000)
       }
     })
   }
@@ -399,8 +443,16 @@
   }
 
   const searchClick = async () => {
+    // console.log(dayjs(dateValue.value[0]).format('YYYY-MM-DD HH:mm:ss'));
+
     loading.value = true
     const reqData = {
+      ma_name: ma_name.value,
+      product_name: product_name.value,
+      product_version: product_version.value,
+      start_time: dateValue.value.length == 0 ? '' : dayjs(dateValue.value[0]).format('YYYY-MM-DD HH:mm:ss'),
+      end_time: dateValue.value.length == 0 ? '' : dayjs(dateValue.value[1]).format('YYYY-MM-DD HH:mm:ss'),
+
       chara_name: tzmcInput.value,
       chara_type: tzlxValue.value,
       star: tzdjValue.value,
@@ -408,10 +460,15 @@
     }
     const { data: res } = await service.get('/api/v1/search_chara', { params: reqData })
     // console.log(res)
-    tableData.value = res.data
+    tableData = res.data
     loading.value = false
   }
   const resetClick = () => {
+    ma_name.value = ''
+    product_name.value = ''
+    product_version.value = ''
+    dateValue.value = ''
+
     tzbhInput.value = ''
     tzmcInput.value = ''
     zycdValue.value = ''
@@ -498,6 +555,26 @@
     })
     // bjDialogVisible.value = false // 关闭对话框
   }
+
+  const starChange = async (row) => {
+    curBjData = row
+    const formData = {
+      chara_id: curBjData.chara_id,
+      chara_name: curBjData.chara_name,
+      chara_type: curBjData.chara_type,
+      star: curBjData.star,
+      chara_level: curBjData.chara_level,
+
+      query_info: curBjData.query_info,
+      description: curBjData.description,
+      ma_name: curBjData.ma_name,
+      product_name: curBjData.product_name,
+      product_version: curBjData.product_version,
+    }
+    const { data: res } = await service.post('/api/v1/update_chara', formData)
+    searchClick()
+    ElMessage.success(res.msg)
+  }
   const del = async (row) => {
     const { chara_id } = row
     const charaIds = [chara_id]
@@ -524,8 +601,13 @@
         })
       })
   }
-  const multDel = async () => {
-    const chara_id = multipleSelection.value.map((item) => item.chara_id)
+  const multDel = async (flag: string) => {
+    let chara_id: Array<String>
+    if (flag == 'mult') {
+      chara_id = multipleSelection.value.map((item) => item.chara_id)
+    } else {
+      chara_id = tableData.map((item) => item.chara_id)
+    }
     ElMessageBox.confirm('是否确定删除选中数据?', 'Warning', {
       confirmButtonText: '确认',
       cancelButtonText: '取消',

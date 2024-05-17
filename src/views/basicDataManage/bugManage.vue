@@ -46,8 +46,9 @@
       <el-col :span="1"></el-col>
       <el-col :span="19">
         <el-button type="primary" :icon="Plus" @click="xjClick">新建</el-button>
-        <el-button @click="multDel">批量删除</el-button>
+        <el-button @click="multDel('mult')">批量删除</el-button>
         <el-button @click="multPut">批量导出</el-button>
+        <el-button @click="multDel('all')">全部删除</el-button>
       </el-col>
       <el-col :span="4">
         <div>
@@ -71,12 +72,13 @@
           >
             <el-table-column type="selection" width="55" />
             <!-- <el-table-column prop="vul_id" label="特征编号" min-width="120" align="center" show-overflow-tooltip /> -->
+            <el-table-column prop="public_date" label="公开日期" sortable min-width="170" align="center" show-overflow-tooltip />
             <el-table-column prop="vul_name" label="漏洞名称" sortable min-width="150" align="center" show-overflow-tooltip />
-            <el-table-column prop="cnvd_id" label="cnvd编号" min-width="150" align="center" show-overflow-tooltip />
-            <el-table-column prop="cve_id" label="cve编号" min-width="150" align="center" show-overflow-tooltip />
+            <el-table-column prop="cnvd_id" label="CNVD编号" min-width="150" align="center" show-overflow-tooltip />
+            <el-table-column prop="cve_id" label="CVE编号" min-width="150" align="center" show-overflow-tooltip />
             <el-table-column prop="vul_type" label="漏洞类型" min-width="100" align="center" show-overflow-tooltip />
             <el-table-column prop="vul_level" label="危害级别" sortable min-width="180" align="center" show-overflow-tooltip />
-            <el-table-column prop="public_date" label="公开日期" sortable min-width="170" align="center" show-overflow-tooltip />
+
             <el-table-column prop="vul_from" label="漏洞来源" min-width="180" align="center" show-overflow-tooltip />
             <el-table-column prop="verified" label="验证信息" min-width="180" align="center" show-overflow-tooltip />
 
@@ -118,9 +120,9 @@
       <div class="xqDialog">
         <span>漏洞名称</span><span>{{ curXqData.vul_name }}</span
         ><br />
-        <span>cnvd编号</span><span>{{ curXqData.cnvd_id }}</span
+        <span>CNVD编号</span><span>{{ curXqData.cnvd_id }}</span
         ><br />
-        <span>cve编号</span><span>{{ curXqData.cve_id }}</span
+        <span>CVE编号</span><span>{{ curXqData.cve_id }}</span
         ><br />
         <span>危害级别</span><span>{{ curXqData.vul_level }}</span
         ><br />
@@ -140,7 +142,9 @@
         ><br />
         <span>收录时间</span><span>{{ curXqData.first_date }}</span
         ><br />
-        <span>更新时间</span><span>{{ curXqData.update_date }}</span>
+        <span>更新时间</span><span>{{ curXqData.update_date }}</span
+        ><br />
+        <span>脚本</span><span style="color: blue; cursor: pointer" @click="downloadFile">下载</span>
       </div>
     </el-dialog>
     <el-dialog v-model="xjDialogVisible" title="新建" width="30%">
@@ -148,15 +152,15 @@
         <el-form-item label="漏洞名称" prop="vul_name">
           <el-input v-model="curXjData.vul_name" placeholder="请输入漏洞名称" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
         </el-form-item>
-        <el-form-item label="cnvd编号" prop="cnvd_id">
-          <el-input v-model="curXjData.cnvd_id" placeholder="请输入cnvd编号" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
+        <el-form-item label="CNVD编号" prop="cnvd_id">
+          <el-input v-model="curXjData.cnvd_id" placeholder="请输入CNVD编号" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
         </el-form-item>
-        <el-form-item label="cve编号" prop="cve_id">
-          <el-input v-model="curXjData.cve_id" placeholder="请输入cve编号" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
+        <el-form-item label="CVE编号" prop="cve_id">
+          <el-input v-model="curXjData.cve_id" placeholder="请输入CVE编号" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
         </el-form-item>
         <el-form-item label="危害级别" prop="vul_level">
           <el-select v-model="curXjData.vul_level" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
-            <el-option v-for="item in zycdOptions" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in whjbOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="公开日期" prop="public_date">
@@ -167,6 +171,11 @@
             style="width: 220px"
             @keyup.enter="handleSubmit(xjForm)"
           />
+        </el-form-item>
+        <el-form-item label="验证信息" prop="verified">
+          <el-select v-model="curXjData.verified" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(xjForm)">
+            <el-option v-for="item in yzxxOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
         </el-form-item>
         <el-form-item label="影响产品" prop="production">
           <el-input v-model="curXjData.production" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
@@ -179,7 +188,7 @@
         </el-form-item>
         <el-form-item label="漏洞类型" prop="vul_type">
           <el-select v-model="curXjData.vul_type" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
-            <el-option v-for="item in tzlxOptions" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in ldlxOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="漏洞来源" prop="vul_from">
@@ -240,20 +249,26 @@
     <el-dialog v-model="bjDialogVisible" title="编辑" width="30%">
       <el-form ref="bjForm" :model="curBjData" :rules="rules" label-width="140px">
         <el-form-item label="漏洞id" prop="vul_id">
-          <el-input v-model="curBjData.vul_id" placeholder="请输入漏洞id" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
+          <el-input
+            v-model="curBjData.vul_id"
+            disabled
+            placeholder="请输入漏洞id"
+            style="width: 220px"
+            @keyup.enter="handleSubmit2(bjForm)"
+          />
         </el-form-item>
         <el-form-item label="漏洞名称" prop="vul_name">
           <el-input v-model="curBjData.vul_name" placeholder="请输入漏洞名称" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
         </el-form-item>
-        <el-form-item label="cnvd编号" prop="cnvd_id">
-          <el-input v-model="curBjData.cnvd_id" placeholder="请输入cnvd编号" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
+        <el-form-item label="CNVD编号" prop="cnvd_id">
+          <el-input v-model="curBjData.cnvd_id" placeholder="请输入CNVD编号" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
         </el-form-item>
-        <el-form-item label="cve编号" prop="cve_id">
-          <el-input v-model="curBjData.cve_id" placeholder="请输入cve编号" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
+        <el-form-item label="CVE编号" prop="cve_id">
+          <el-input v-model="curBjData.cve_id" placeholder="请输入CVE编号" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
         </el-form-item>
         <el-form-item label="危害级别" prop="vul_level">
           <el-select v-model="curBjData.vul_level" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
-            <el-option v-for="item in zycdOptions" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in whjbOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="公开日期" prop="public_date">
@@ -265,8 +280,13 @@
             @keyup.enter="handleSubmit2(bjForm)"
           />
         </el-form-item>
+        <el-form-item label="验证信息" prop="verified">
+          <el-select v-model="curBjData.verified" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
+            <el-option v-for="item in yzxxOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
         <el-form-item label="影响产品" prop="production">
-          <el-date-picker v-model="curBjData.production" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
+          <el-input v-model="curBjData.production" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
         </el-form-item>
         <el-form-item label="漏洞描述" prop="description">
           <el-input
@@ -281,7 +301,7 @@
         </el-form-item>
         <el-form-item label="漏洞类型" prop="vul_type">
           <el-select v-model="curBjData.vul_type" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
-            <el-option v-for="item in tzlxOptions" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in ldlxOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="漏洞来源" prop="vul_from">
@@ -364,7 +384,7 @@
   import dayjs from 'dayjs'
   import { ElMessage, type FormInstance, ElMessageBox } from 'element-plus'
   const rules = ref({
-    cnvd_id: [{ required: true, message: '请输入cnvd编号', trigger: 'change' }],
+    cnvd_id: [{ required: true, message: '请输入CNVD编号', trigger: 'change' }],
     vul_name: [{ required: true, message: '请输入漏洞名称', trigger: 'blur' }],
     vul_type: [{ required: true, message: '请选择漏洞类型', trigger: 'change' }],
     public_date: [{ required: true, message: '请选择公开日期', trigger: 'change' }],
@@ -469,11 +489,21 @@
         file = null
         event.target.value = ''
         searchClick()
+        loading.value = true
+        setTimeout(() => {
+          searchClick()
+          loading.value = false
+        }, 1000)
       } else {
         ElMessage.error(res.msg)
         file = null
         event.target.value = ''
         searchClick()
+        loading.value = true
+        setTimeout(() => {
+          searchClick()
+          loading.value = false
+        }, 1000)
       }
     })
   }
@@ -600,18 +630,35 @@
       console.log(valid)
 
       if (valid) {
-        const formData = {
-          vul_id: curBjData.vul_id,
-          vul_name: curBjData.vul_name,
-          vul_type: curBjData.vul_type,
-          star: curBjData.star,
-          vul_level: curBjData.vul_level,
-          query_info: curBjData.query_info,
-          description: curBjData.description,
-          ma_name: curBjData.ma_name,
-          product_name: curBjData.product_name,
-          product_version: curBjData.product_version,
-        }
+        const formData = new FormData()
+        formData.append('vul_id', curBjData.vul_id)
+        formData.append('vul_name', curBjData.vul_name)
+        formData.append('cnvd_id', curBjData.cnvd_id)
+        formData.append('cve_id', curBjData.cve_id)
+        formData.append('vul_level', curBjData.vul_level)
+        formData.append('public_date', dayjs(curBjData.public_date).format('YYYY-MM-DD'))
+        formData.append('production', curBjData.production)
+        formData.append('description', curBjData.description)
+        formData.append('solution', curBjData.solution)
+        formData.append('vul_type', curBjData.vul_type)
+        formData.append('vul_from', curBjData.vul_from)
+        formData.append('verified', curBjData.verified)
+        formData.append('get_date', dayjs(curBjData.get_date).format('YYYY-MM-DD'))
+        formData.append('first_date', dayjs(curBjData.first_date).format('YYYY-MM-DD'))
+        formData.append('update_date', dayjs(curBjData.update_date).format('YYYY-MM-DD'))
+        formData.append('file', curBjData.file[0].raw)
+        // const formData = {
+        //   vul_id: curBjData.vul_id,
+        //   vul_name: curBjData.vul_name,
+        //   vul_type: curBjData.vul_type,
+        //   star: curBjData.star,
+        //   vul_level: curBjData.vul_level,
+        //   query_info: curBjData.query_info,
+        //   description: curBjData.description,
+        //   ma_name: curBjData.ma_name,
+        //   product_name: curBjData.product_name,
+        //   product_version: curBjData.product_version,
+        // }
         const { data: res } = await service.post('/api/v1/update_vul', formData)
         console.log(res)
         bjDialogVisible.value = false
@@ -661,8 +708,14 @@
         })
       })
   }
-  const multDel = async () => {
-    const vul_id = multipleSelection.value.map((item) => item.vul_id)
+  const multDel = async (flag: string) => {
+    let vul_id: Array<String>
+    if (flag == 'mult') {
+      vul_id = multipleSelection.value.map((item) => item.vul_id)
+    } else {
+      vul_id = tableData.value.map((item) => item.vul_id)
+    }
+    // const vul_id = multipleSelection.value.map((item) => item.vul_id)
     ElMessageBox.confirm('是否确定删除选中数据?', 'Warning', {
       confirmButtonText: '确认',
       cancelButtonText: '取消',
@@ -745,6 +798,33 @@
       .catch((error) => {
         console.error('下载模板失败：', error)
         // 处理下载失败的情况
+      })
+  }
+  const downloadFile = () => {
+    console.log(curXqData.value.file_url)
+
+    // window.location.href = curXqData.file_url
+    const startIndex = curXqData.value.file_url.indexOf('/api/v1/download_vul_file')
+    const substring = curXqData.value.file_url.substring(startIndex)
+    service({
+      method: 'get',
+      url: substring,
+      responseType: 'blob',
+    })
+      .then(function (res) {
+        const contentDisposition = res.headers['content-disposition']
+        const fileName = contentDisposition.split('filename=')[1].trim()
+        let blob = new Blob([res.data]) // { type: "application/vnd.ms-excel" }
+        let url = window.URL.createObjectURL(blob) // 创建一个临时的url指向blob对象
+        let a = document.createElement('a')
+        a.href = url
+        a.download = fileName
+        a.click()
+        // 释放这个临时的对象url
+        window.URL.revokeObjectURL(url)
+      })
+      .catch(function (res) {
+        console.log('error', res)
       })
   }
 </script>

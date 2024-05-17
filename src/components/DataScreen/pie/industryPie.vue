@@ -8,26 +8,21 @@
   const chartsRef = ref<HTMLElement | null>()
   var trafficWay = [
     {
-      name: 'CNNVD',
-      value: 30,
+      name: '金融行业',
+      value: 12,
     },
     {
-      name: 'CNVD',
+      name: '医疗行业',
+      value: 8,
+    },
+    {
+      name: 'IT行业',
       value: 20,
     },
-    {
-      name: 'WooYun',
-      value: 18,
-    },
-    {
-      name: 'SCAP',
-      value: 15,
-    },
-    { name: 'Seebug', value: 12 },
   ]
 
   var data = []
-  var color = ['#fd566a', '#9787ff', '#fdb36a', '#fdd56a', '#6da7ff', '#63e1f2', '#ff3000']
+  var color = ['#6da7ff', '#63e1f2', '#ff3000', '#fd566a', '#9787ff', '#fdb36a', '#fdd56a']
   for (var i = 0; i < trafficWay.length; i++) {
     data.push(
       {
@@ -104,7 +99,7 @@
     color: color,
     title: [
       {
-        text: '漏洞来源厂商',
+        text: '漏洞危害行业',
         top: '44%',
         textAlign: 'center',
         left: '49.50%',
@@ -117,7 +112,7 @@
         },
       },
       {
-        text: '5',
+        text: '3',
         top: '53%',
         textAlign: 'center',
         left: '48%',

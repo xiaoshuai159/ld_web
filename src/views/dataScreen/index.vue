@@ -92,8 +92,11 @@
           <div class="item-complex" style="margin-bottom: 20px">
             <line-charts width="100%" height="100%" />
           </div>
-          <div class="item-complex">
+          <div class="item-complex" style="margin-bottom: 20px">
             <MultilineCharts />
+          </div>
+          <div class="item-complex">
+            <BarCharts2 width="100%" height="100%" />
           </div>
         </div>
         <div class="middle">
@@ -105,8 +108,11 @@
           <div class="item-complex" style="margin-bottom: 20px">
             <BarCharts width="100%" height="100%" />
           </div>
+          <div class="item-complex" style="margin-bottom: 20px">
+            <PieCharts style="transform: translateX(-30%)" /><PieCharts2 style="transform: translate(30%, -100%)" />
+          </div>
           <div class="item-complex">
-            <PieCharts />
+            <rollTable></rollTable>
           </div>
         </div>
       </div>
@@ -122,6 +128,9 @@
   import MigrationCharts from '@/components/DataScreen/migrationEcharts/index.vue'
   import MultilineCharts from '@/components/DataScreen/Multiline/index'
   import PieCharts from '@/components/DataScreen/Pie/index'
+  import PieCharts2 from '@/components/DataScreen/Pie/industryPie'
+  import BarCharts2 from '@/components/DataScreen/barEcharts/provinceBar.vue'
+  import rollTable from '@/components/DataScreen/rollTable/index.vue'
   const headerData = reactive([{ text: '漏洞数量', num: '15213012', icon: '' }])
   const timeDate = ref()
   const hourTime = ref()

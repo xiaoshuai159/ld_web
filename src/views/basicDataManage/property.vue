@@ -7,18 +7,23 @@
         <el-col :span="2"></el-col>
         <el-col :span="22">
           <div style="display: inline-block">
-            <!-- <span>资产编号：</span>
-            <el-input v-model="zcbhInput" style="width: 220px" placeholder="请输入" /> -->
+            <span>厂商名称：</span>
+            <el-input v-model="ma_name" style="width: 220px" placeholder="请输入" />
+            <span style="margin-left: 10px">产品名称：</span>
+            <el-input v-model="product_name" style="width: 220px" placeholder="请输入" />
+            <span style="margin-left: 10px">产品版本：</span>
+            <el-input v-model="product_version" style="width: 220px" placeholder="请输入" />
+          </div>
+        </el-col>
+      </el-row>
+      <el-row style="margin-top: 10px">
+        <el-col :span="2"></el-col>
+        <el-col :span="22">
+          <div style="display: inline-block">
             <span>资产名称：</span>
             <el-input v-model="zcmcInput" style="width: 220px" placeholder="请输入" />
-
             <span style="margin-left: 10px">资产归属地区：</span>
-            <!-- <el-select v-model="zycdValue" placeholder="请选择" style="width: 220px">
-              <el-option v-for="item in zycdOptions" :key="item.value" :label="item.label" :value="item.value" />
-            </el-select> -->
             <el-input v-model="zcgsdqInput" style="width: 220px" placeholder="请输入" />
-            <!-- <span style="margin-left: 10px">资产归属单位：</span>
-            <el-input v-model="zcgsdwInput" style="width: 220px" placeholder="请输入" /> -->
             <span style="margin-left: 10px">资产等级：</span>
             <el-select v-model="zcdjValue" placeholder="请选择" style="width: 220px">
               <el-option v-for="item in zcdjOptions" :key="item.value" :label="item.label" :value="item.value" />
@@ -35,7 +40,15 @@
             <el-select v-model="zclxValue" placeholder="请选择" style="width: 220px">
               <el-option v-for="item in zclxOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
-
+            <span style="margin-left: 10px">日期选择：</span>
+            <el-date-picker
+              v-model="dateValue"
+              type="datetimerange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              style="transform: translateY(2px)"
+            />
             <!-- <span style="margin-left: 10px">日期选择：</span>
             <el-date-picker v-model="dateValue" type="daterange" range-separator="至" start-placeholder="开始日期"
               end-placeholder="结束日期" style="transform: translateY(2px);"/> -->
@@ -47,8 +60,9 @@
       <el-col :span="1"></el-col>
       <el-col :span="19">
         <el-button type="primary" :icon="Plus" @click="xjClick">新建</el-button>
-        <el-button @click="multDel">批量删除</el-button>
+        <el-button @click="multDel('mult')">批量删除</el-button>
         <el-button @click="multPut">批量导出</el-button>
+        <el-button @click="multDel('all')">全部删除</el-button>
       </el-col>
       <el-col :span="4">
         <div>
@@ -71,17 +85,22 @@
             @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" width="55" />
+            <el-table-column prop="ma_name" label="厂商名称" min-width="130" align="center" show-overflow-tooltip />
+            <el-table-column prop="product_name" label="产品名称" min-width="130" align="center" show-overflow-tooltip />
+            <el-table-column prop="product_version" label="产品版本" min-width="130" align="center" show-overflow-tooltip />
             <!-- <el-table-column prop="asset_id" label="资产编号" min-width="120" align="center" show-overflow-tooltip /> -->
             <el-table-column prop="asset_name" label="资产名称" min-width="150" align="center" show-overflow-tooltip sortable />
             <el-table-column prop="asset_type" label="资产类型" min-width="100" align="center" show-overflow-tooltip />
             <el-table-column prop="create_time" label="资产录入时间" min-width="180" align="center" show-overflow-tooltip sortable />
             <!-- <el-table-column prop="asset_unit" label="资产归属单位" min-width="180" align="center" show-overflow-tooltip
               sortable /> -->
-            <el-table-column prop="star" label="资产等级" min-width="130" align="center" show-overflow-tooltip sortable />
-            <el-table-column prop="ma_name" label="厂商名称" min-width="130" align="center" show-overflow-tooltip />
-            <el-table-column prop="product_name" label="产品名称" min-width="130" align="center" show-overflow-tooltip />
-            <el-table-column prop="product_version" label="产品版本" min-width="130" align="center" show-overflow-tooltip />
-            <el-table-column prop="asset_icp" label="备案信息" min-width="180" align="center" show-overflow-tooltip />
+            <el-table-column prop="star" label="资产等级" min-width="130" align="center" show-overflow-tooltip sortable>
+              <template #default="{ row }">
+                <el-rate v-model="row.star" show-score text-color="#ff9900" score-template="{value}星" @change="starChange(row)" />
+              </template>
+            </el-table-column>
+
+            <el-table-column prop="icp" label="备案信息" min-width="180" align="center" show-overflow-tooltip />
             <el-table-column prop="operator" label="操作" min-width="140" align="center" fixed="right">
               <template #default="scope">
                 <el-button type="primary" size="small" link @click="xqClick(scope.row)"> 详情 </el-button>
@@ -114,6 +133,12 @@
     </el-row>
     <el-dialog v-model="xqDialogVisible" title="详情信息" width="35%">
       <div class="xqDialog">
+        <span>厂商名称</span><span>{{ curXqData.ma_name }}</span
+        ><br />
+        <span>产品名称</span><span>{{ curXqData.product_name }}</span
+        ><br />
+        <span>产品版本</span><span>{{ curXqData.product_version }}</span
+        ><br />
         <span>资产编号</span><span>{{ curXqData.asset_id }}</span
         ><br />
         <span>资产名称</span><span>{{ curXqData.asset_name }}</span
@@ -121,23 +146,22 @@
         <span>资产类型</span><span>{{ curXqData.asset_type }}</span
         ><br />
         <!-- <span>资产归属单位</span><span>{{ curXqData.asset_unit }}</span><br /> -->
-        <span>资产等级</span><span>{{ curXqData.star }}</span
+        <span>评价星级</span><span>{{ curXqData.star }}</span
         ><br />
         <span>资产来源</span><span>{{ curXqData.asset_from }}</span
         ><br />
-        <span>备案信息</span><span>{{ curXqData.asset_icp }}</span
+
+        <span>备案信息</span><span>{{ curXqData.icp }}</span
         ><br />
         <span>资产归属地区</span><span>{{ curXqData.asset_area }}</span
+        ><br />
+        <span>资产内容</span><span>{{ curXqData.asset_li }}</span
         ><br />
         <span>资产录入时间</span><span>{{ curXqData.create_time }}</span
         ><br />
         <span>相关资产特征</span><span>{{ curXqData.description }}</span
         ><br />
-        <span>厂商名称</span><span>{{ curXqData.ma_name }}</span
-        ><br />
-        <span>产品名称</span><span>{{ curXqData.product_name }}</span
-        ><br />
-        <span>相关资产特征</span><span>{{ curXqData.version }}</span
+        <span>标签</span><span>{{ curXqData.labels }}</span
         ><br />
       </div>
     </el-dialog>
@@ -168,10 +192,10 @@
           <el-input v-model="curXjData.asset_unit" placeholder="请输入资产归属单位" style="width: 220px" />
         </el-form-item> -->
 
-        <el-form-item label="资产备案信息" prop="asset_icp">
-          <el-input v-model="curXjData.asset_icp" placeholder="请输入备案信息" style="width: 220px" />
+        <el-form-item label="资产备案信息" prop="icp">
+          <el-input v-model="curXjData.icp" placeholder="请输入备案信息" style="width: 220px" />
         </el-form-item>
-        <el-form-item label="资产重要程度" prop="chara_level">
+        <el-form-item label="资产重要程度" prop="asset_level">
           <el-select v-model="curXjData.asset_level" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit(xjForm)">
             <el-option v-for="item in zycdOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
@@ -179,8 +203,8 @@
         <el-form-item label="资产归属地区" prop="asset_area">
           <el-input v-model="curXjData.asset_area" placeholder="请输入描述信息" style="width: 220px" />
         </el-form-item>
-        <el-form-item label="资产信息" prop="asset_data">
-          <el-input v-model="curXjData.asset_data" placeholder="请输入资产信息" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
+        <el-form-item label="资产信息" prop="asset_li">
+          <el-input v-model="curXjData.asset_li" placeholder="请输入资产信息" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
         </el-form-item>
         <el-form-item label="厂商名称" prop="ma_name">
           <el-input v-model="curXjData.ma_name" placeholder="请输入厂商名称" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
@@ -213,7 +237,13 @@
     <el-dialog v-model="bjDialogVisible" title="编辑" width="30%">
       <el-form ref="bjForm" :model="curBjData" :rules="rules" label-width="140px">
         <el-form-item label="资产id" prop="asset_id">
-          <el-input v-model="curBjData.asset_id" placeholder="请输入资产id" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
+          <el-input
+            v-model="curBjData.asset_id"
+            disabled
+            placeholder="请输入资产id"
+            style="width: 220px"
+            @keyup.enter="handleSubmit2(bjForm)"
+          />
         </el-form-item>
         <el-form-item label="资产名称" prop="asset_name">
           <el-input v-model="curBjData.asset_name" placeholder="请输入特征名称" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
@@ -231,7 +261,7 @@
             <el-option v-for="item in tzdjOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="相关资产重要程度" prop="chara_level">
+        <el-form-item label="相关资产重要程度" prop="asset_level">
           <el-select v-model="curBjData.asset_level" placeholder="请选择" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)">
             <el-option v-for="item in zycdOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
@@ -248,12 +278,12 @@
           <el-input v-model="curBjData.asset_unit" placeholder="请输入资产归属单位" style="width: 220px"
             @keyup.enter="handleSubmit2(bjForm)" />
         </el-form-item> -->
-        <el-form-item label="资产备案信息" prop="asset_icp">
-          <el-input v-model="curBjData.asset_icp" placeholder="请输入备案信息" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
+        <el-form-item label="资产备案信息" prop="icp">
+          <el-input v-model="curBjData.icp" placeholder="请输入备案信息" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
         </el-form-item>
-        <el-form-item label="资产详细信息" prop="asset_data">
+        <el-form-item label="资产详细信息" prop="asset_li">
           <el-input
-            v-model="curBjData.asset_data"
+            v-model="curBjData.asset_li"
             placeholder="请输入资产详细信息"
             style="width: 220px"
             @keyup.enter="handleSubmit2(bjForm)"
@@ -311,8 +341,8 @@
   import { Plus, Upload } from '@element-plus/icons-vue'
   import { ref, reactive, onBeforeMount, Ref, onMounted, inject } from 'vue'
   import service from '@/api/request'
+  import dayjs from 'dayjs'
   import { ElMessage, type FormInstance, ElMessageBox } from 'element-plus'
-  import { tr } from 'element-plus/es/locale'
   let loading = ref(false)
   const rules = ref({
     asset_id: [{ required: true, message: '请输入资产id', trigger: 'change' }], // 编辑独有
@@ -321,7 +351,8 @@
     chara_name: [{ required: true, message: '请输入相关资产特征', trigger: 'change' }],
     star: [{ required: true, message: '请选择评价星级', trigger: 'change' }],
     asset_level: [{ required: true, message: '请选择资产重要程度', trigger: 'change' }],
-    asset_data: [{ required: true, message: '请输入资产数据', trigger: 'change' }],
+    // asset_area:[{ required: true, message: '请输入资产归属地区', trigger: 'change' }],
+    asset_li: [{ required: true, message: '请输入资产数据', trigger: 'change' }],
     ma_name: [{ required: true, message: '请输入厂商名称', trigger: 'change' }],
     product_name: [{ required: true, message: '请输入产品名称', trigger: 'change' }],
     product_version: [{ required: true, message: '请输入产品版本', trigger: 'change' }],
@@ -329,6 +360,9 @@
   let xqDialogVisible = ref(false)
   let xjDialogVisible = ref(false)
   let bjDialogVisible = ref(false)
+  let ma_name = ref('')
+  let product_name = ref('')
+  let product_version = ref('')
   const dateValue = ref('')
   const zcbhInput = ref('')
   const ldslInput = ref('')
@@ -418,17 +452,29 @@
     file = event.target.files[0]
     const formData = new FormData()
     formData.append('file', file)
-    service.post('/api/v1/upload_chara', formData).then(({ data: res }) => {
+    service.post('/api/v1/upload_asset', formData).then(({ data: res }) => {
       console.log(res)
       if (res.code == 200) {
         ElMessage.success('上传成功')
         wjDialogVisible.value = false
         file = null
         event.target.value = ''
+        searchClick()
+        loading.value = true
+        setTimeout(() => {
+          searchClick()
+          loading.value = false
+        }, 1000)
       } else {
         ElMessage.error(res.msg)
         file = null
         event.target.value = ''
+        searchClick()
+        loading.value = true
+        setTimeout(() => {
+          searchClick()
+          loading.value = false
+        }, 1000)
       }
     })
   }
@@ -467,6 +513,12 @@
   }
   const searchClick = async () => {
     const reqData = {
+      ma_name: ma_name.value,
+      product_name: product_name.value,
+      product_version: product_version.value,
+      start_time: dateValue.value.length == 0 ? '' : dayjs(dateValue.value[0]).format('YYYY-MM-DD HH:mm:ss'),
+      end_time: dateValue.value.length == 0 ? '' : dayjs(dateValue.value[1]).format('YYYY-MM-DD HH:mm:ss'),
+
       asset_name: zcmcInput.value,
       asset_type: zclxValue.value,
       asset_star: zcdjValue.value,
@@ -478,6 +530,10 @@
     tableData.value = res.data
   }
   const resetClick = () => {
+    ma_name.value = ''
+    product_name.value = ''
+    product_version.value = ''
+    dateValue.value = ''
     zcbhInput.value = ''
     zcmcInput.value = ''
     zycdValue.value = ''
@@ -535,13 +591,18 @@
             const formData = {
               asset_name: curXjData.asset_name,
               asset_type: curXjData.asset_type,
-              chara_name: curXjData.chara_name,
-              star: curXjData.star,
-              asset_icp: curXjData.asset_icp,
               asset_level: curXjData.asset_level,
               asset_area: curXjData.asset_area,
-              asset_data: curXjData.asset_data,
+              asset_from: curXjData.asset_from,
+
+              asset_li: curXjData.asset_li,
+              // chara_id: curXjData.chara_id,
+              star: curXjData.star,
+              asset_icp: curXjData.icp,
               ma_name: curXjData.ma_name,
+
+              labels: curXjData.labels,
+              area: curXjData.area,
               product_name: curXjData.product_name,
               product_version: curXjData.product_name,
             }
@@ -588,8 +649,8 @@
 
           asset_level: curBjData.asset_level,
           asset_area: curBjData.asset_area,
-          asset_icp: curBjData.asset_icp,
-          asset_data: curBjData.asset_data,
+          asset_icp: curBjData.icp,
+          asset_li: curBjData.asset_li,
           labels: curBjData.labels,
 
           ma_name: curBjData.ma_name,
@@ -645,10 +706,14 @@
         })
       })
   }
-  const multDel = async () => {
-    // const assetIds = multipleSelection
-    // console.log(multipleSelection.value);
-    const asset_id = multipleSelection.value.map((item) => item.asset_id)
+  const multDel = async (flag: string) => {
+    let asset_id: Array<String>
+    if (flag == 'mult') {
+      asset_id = multipleSelection.value.map((item) => item.asset_id)
+    } else {
+      asset_id = tableData.value.map((item) => item.asset_id)
+    }
+    // const asset_id = multipleSelection.value.map((item) => item.asset_id)
     ElMessageBox.confirm('是否确定删除选中数据?', 'Warning', {
       confirmButtonText: '确认',
       cancelButtonText: '取消',
@@ -702,8 +767,43 @@
         console.log('error', res)
       })
   }
+  const starChange = async (row) => {
+    curBjData = row
+    const formData = {
+      asset_id: curBjData.asset_id,
+      asset_name: curBjData.asset_name,
+      asset_type: curBjData.asset_type,
+      chara_id: curBjData.chara_id,
+      asset_star: curBjData.star,
+
+      asset_level: curBjData.asset_level,
+      asset_area: curBjData.asset_area,
+      asset_icp: curBjData.icp,
+      asset_li: curBjData.asset_li,
+      labels: curBjData.labels,
+
+      ma_name: curBjData.ma_name,
+      product_name: curBjData.product_name,
+      product_version: curBjData.product_name,
+    }
+    console.log(formData)
+
+    const { data: res } = await service.post('/api/v1/update_asset', formData)
+    searchClick()
+    ElMessage.success(res.msg)
+    loading.value = true
+    setTimeout(() => {
+      searchClick()
+      loading.value = false
+    }, 1000)
+  }
 </script>
 <style lang="scss" scoped>
+  .selectClass span {
+    display: inline-block;
+    text-align: right;
+    width: 110px;
+  }
   .xjDialog > span {
     display: inline-block;
     color: #999999;

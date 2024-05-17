@@ -9,12 +9,12 @@
           <div style="display: inline-block">
             <span>攻击特征编码：</span>
             <el-input v-model="gjtzbmInput" style="width: 220px" placeholder="请输入" />
-            <span style="margin-left: 10px">特征名称：</span>
+            <span style="margin-left: 10px; display: inline-block; width: 70px; text-align: right">特征名称：</span>
             <el-input v-model="tzmcInput" style="width: 220px" placeholder="请输入" />
 
-            <span style="margin-left: 10px">星级：</span>
-            <el-select v-model="xjValue" placeholder="请选择" style="width: 220px">
-              <el-option v-for="item in xjOptions" :key="item.value" :label="item.label" :value="item.value" />
+            <span style="margin-left: 10px">相关漏洞危害等级：</span>
+            <el-select v-model="xglddjValue" placeholder="请选择" style="width: 220px">
+              <el-option v-for="item in xglddjOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </div>
         </el-col>
@@ -22,16 +22,25 @@
 
       <el-row style="margin-top: 10px">
         <el-col :span="2"></el-col>
-        <el-col :span="18">
+        <el-col :span="22">
           <div>
             <span>相关漏洞类型：</span>
             <el-select v-model="xgldlxValue" placeholder="请选择" style="width: 220px">
               <el-option v-for="item in xgldlxOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
-            <span style="margin-left: 10px">相关漏洞等级：</span>
-            <el-select v-model="xglddjValue" placeholder="请选择" style="width: 220px">
-              <el-option v-for="item in xglddjOptions" :key="item.value" :label="item.label" :value="item.value" />
+            <span style="margin-left: 10px; display: inline-block; width: 70px; text-align: right">星级：</span>
+            <el-select v-model="xjValue" placeholder="请选择" style="width: 220px">
+              <el-option v-for="item in xjOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
+            <span style="margin-left: 10px">日期选择：</span>
+            <el-date-picker
+              v-model="dateValue"
+              type="datetimerange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              style="transform: translateY(2px); width: 340px"
+            />
             <!-- <span style="margin-left: 10px">日期选择：</span>
             <el-date-picker v-model="dateValue" type="daterange" range-separator="至" start-placeholder="开始日期"
               end-placeholder="结束日期" style="transform: translateY(2px);"/> -->
@@ -43,8 +52,9 @@
       <el-col :span="1"></el-col>
       <el-col :span="9">
         <el-button type="primary" :icon="Plus" @click="xjClick">新建</el-button>
-        <el-button @click="multDel">批量删除</el-button>
+        <el-button @click="multDel('mult')">批量删除</el-button>
         <el-button @click="multPut">批量导出</el-button>
+        <el-button @click="multDel('all')">全部删除</el-button>
       </el-col>
       <el-col :span="10">
         <!-- <el-input v-model="searchInput" style="width: 18vw" placeholder="请输入关键字" :suffix-icon="Search"></el-input> -->
@@ -70,11 +80,13 @@
             @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" width="55" />
-            <el-table-column prop="c_id" label="攻击特征编码" min-width="150" align="center" show-overflow-tooltip />
-            <el-table-column prop="chara_name" label="特征名称" min-width="100" align="center" show-overflow-tooltip />
+            <el-table-column prop="chara_name" label="漏洞名称" min-width="100" align="center" show-overflow-tooltip />
+            <el-table-column prop="create_time" label="创建时间" min-width="100" align="center" show-overflow-tooltip />
+            <el-table-column prop="c_id" label="相关漏洞编号" min-width="150" align="center" show-overflow-tooltip />
+
             <!-- <el-table-column prop="create_time" label="提取时间" min-width="180" align="center" /> -->
             <el-table-column prop="star" label="评价星级" min-width="80" align="center" show-overflow-tooltip />
-            <el-table-column prop="vul_level" label="相关漏洞等级" min-width="110" align="center" show-overflow-tooltip />
+            <el-table-column prop="vul_level" label="相关漏洞危害等级" min-width="140" align="center" show-overflow-tooltip />
             <el-table-column prop="vul_type" label="相关漏洞类型" min-width="110" align="center" show-overflow-tooltip />
             <el-table-column prop="vul_rule" label="漏洞规则定义" min-width="150" align="center" show-overflow-tooltip />
             <el-table-column prop="vul_payload" label="返回值" min-width="100" align="center" show-overflow-tooltip />
@@ -164,7 +176,7 @@
           />
         </el-form-item>
         <el-form-item label="返回值" prop="vul_payload">
-          <el-input v-model="curXjData.vul_payload" placeholder="请输入描述信息" style="width: 220px" type="textarea" :rows="3" />
+          <el-input v-model="curXjData.vul_payload" placeholder="请输入" style="width: 220px" type="textarea" :rows="3" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -181,7 +193,13 @@
             @keyup.enter="handleSubmit2(bjForm)" />
         </el-form-item> -->
         <el-form-item label="CNVD/CVE编号" prop="c_id">
-          <el-input v-model="curBjData.c_id" placeholder="请输入CNVD/CVE编号" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
+          <el-input
+            v-model="curBjData.c_id"
+            disabled
+            placeholder="请输入CNVD/CVE编号"
+            style="width: 220px"
+            @keyup.enter="handleSubmit2(bjForm)"
+          />
         </el-form-item>
         <el-form-item label="特征名称" prop="chara_name">
           <el-input v-model="curBjData.chara_name" placeholder="请输入特征名称" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
@@ -244,8 +262,10 @@
   import { Search } from '@element-plus/icons-vue'
   import { ElMessage, type FormInstance, ElMessageBox } from 'element-plus'
   import service from '@/api/request'
+  import dayjs from 'dayjs'
   let loading = ref(false)
   const searchInput = ref('')
+  let dateValue = ref('')
   const gjtzbmInput = ref('')
   const tzbhInput = ref('')
   const tzmcInput = ref('')
@@ -275,7 +295,7 @@
     { label: '严', value: '严' },
   ])
   const rules = ref({
-    c_id: [{ required: true, message: '请输入cnvd/cve编号', trigger: 'change' }],
+    c_id: [{ required: true, message: '请输入CNVD/CVE编号', trigger: 'change' }],
     vul_id: [{ required: true, message: '请输入特征id', trigger: 'change' }],
     vul_name: [{ required: true, message: '请输入特征名称', trigger: 'blur' }],
     vul_type: [{ required: true, message: '请选择特征类型', trigger: 'change' }],
@@ -328,7 +348,7 @@
     file = event.target.files[0]
     const formData = new FormData()
     formData.append('file', file)
-    service.post('/api/v1/upload_asset', formData).then(({ data: res }) => {
+    service.post('/api/v1/upload_vul_chara', formData).then(({ data: res }) => {
       console.log(res)
       if (res.code == 200) {
         ElMessage.success('上传成功')
@@ -336,11 +356,21 @@
         file = null
         event.target.value = ''
         searchClick()
+        loading.value = true
+        setTimeout(() => {
+          searchClick()
+          loading.value = false
+        }, 1000)
       } else {
         ElMessage.error(res.msg)
         file = null
         event.target.value = ''
         searchClick()
+        loading.value = true
+        setTimeout(() => {
+          searchClick()
+          loading.value = false
+        }, 1000)
       }
     })
   }
@@ -377,6 +407,8 @@
   })
   const searchClick = async () => {
     const reqData = {
+      start_time: dateValue.value.length == 0 ? '' : dayjs(dateValue.value[0]).format('YYYY-MM-DD HH:mm:ss'),
+      end_time: dateValue.value.length == 0 ? '' : dayjs(dateValue.value[1]).format('YYYY-MM-DD HH:mm:ss'),
       c_id: gjtzbmInput.value,
       vul_name: tzmcInput.value,
       vul_type: xgldlxValue.value,
@@ -388,6 +420,7 @@
     tableData.value = res.data
   }
   const resetClick = () => {
+    dateValue.value = ''
     gjtzbmInput.value = ''
     tzbhInput.value = ''
     tzmcInput.value = ''
@@ -517,8 +550,14 @@
         })
       })
   }
-  const multDel = async () => {
-    const chara_id = multipleSelection.value.map((item) => item.chara_id)
+  const multDel = async (flag: string) => {
+    let chara_id: Array<String>
+    if (flag == 'mult') {
+      chara_id = multipleSelection.value.map((item) => item.chara_id)
+    } else {
+      chara_id = tableData.value.map((item) => item.chara_id)
+    }
+    // const chara_id = multipleSelection.value.map((item) => item.chara_id)
     ElMessageBox.confirm('是否确定删除选中数据?', 'Warning', {
       confirmButtonText: '确认',
       cancelButtonText: '取消',

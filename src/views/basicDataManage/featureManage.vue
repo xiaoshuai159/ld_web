@@ -50,8 +50,9 @@
       <el-col :span="1"></el-col>
       <el-col :span="19">
         <el-button type="primary" :icon="Plus" @click="xjClick">新建</el-button>
-        <el-button @click="multDel">批量删除</el-button>
+        <el-button @click="multDel('mult')">批量删除</el-button>
         <el-button @click="multPut">批量导出</el-button>
+        <el-button @click="multDel('all')">全部删除</el-button>
       </el-col>
       <el-col :span="4">
         <div>
@@ -77,12 +78,12 @@
             <!-- <el-table-column prop="asset_id" label="特征编号" min-width="120" align="center" show-overflow-tooltip /> -->
             <!-- <el-table-column prop="asset_unit_id" label="资产归属id" sortable min-width="150" align="center"
               show-overflow-tooltip /> -->
+            <el-table-column prop="unit" label="归属单位" min-width="130" align="center" show-overflow-tooltip />
             <el-table-column prop="ip" label="IP地址" min-width="150" align="center" show-overflow-tooltip />
             <el-table-column prop="country" label="国家" min-width="100" align="center" show-overflow-tooltip />
             <el-table-column prop="province" label="省份" min-width="180" align="center" show-overflow-tooltip />
             <el-table-column prop="city" label="城市" min-width="130" align="center" show-overflow-tooltip />
             <el-table-column prop="ips" label="运营商" min-width="130" align="center" show-overflow-tooltip />
-            <el-table-column prop="unit" label="归属单位" min-width="130" align="center" show-overflow-tooltip />
             <el-table-column prop="operator" label="操作" min-width="140" align="center" fixed="right">
               <template #default="scope">
                 <el-button type="primary" size="small" link @click="xqClick(scope.row)"> 详情 </el-button>
@@ -164,6 +165,7 @@
         <el-form-item label="资产归属id" prop="asset_unit_id">
           <el-input
             v-model="curBjData.asset_unit_id"
+            disabled
             placeholder="请输入资产归属id"
             style="width: 220px"
             @keyup.enter="handleSubmit2(bjForm)"
@@ -321,10 +323,22 @@
         wjDialogVisible.value = false
         file = null
         event.target.value = ''
+        searchClick()
+        loading.value = true
+        setTimeout(() => {
+          searchClick()
+          loading.value = false
+        }, 1000)
       } else {
         ElMessage.error(res.msg)
         file = null
         event.target.value = ''
+        searchClick()
+        loading.value = true
+        setTimeout(() => {
+          searchClick()
+          loading.value = false
+        }, 1000)
       }
     })
   }
@@ -495,8 +509,14 @@
         })
       })
   }
-  const multDel = async () => {
-    const asset_unit_id = multipleSelection.value.map((item) => item.asset_unit_id)
+  const multDel = async (flag: string) => {
+    let asset_unit_id: Array<String>
+    if (flag == 'mult') {
+      asset_unit_id = multipleSelection.value.map((item) => item.asset_unit_id)
+    } else {
+      asset_unit_id = tableData.value.map((item) => item.asset_unit_id)
+    }
+    // const asset_unit_id = multipleSelection.value.map((item) => item.asset_unit_id)
     ElMessageBox.confirm('是否确定删除选中数据?', 'Warning', {
       confirmButtonText: '确认',
       cancelButtonText: '取消',
@@ -583,6 +603,11 @@
   }
 </script>
 <style lang="scss" scoped>
+  .selectClass span {
+    display: inline-block;
+    text-align: right;
+    width: 80px;
+  }
   .xjDialog > span {
     display: inline-block;
     color: #999999;
