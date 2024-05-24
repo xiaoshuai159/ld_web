@@ -45,7 +45,7 @@
     西藏: [91.091762, 30.037072],
     浙江: [119.5313, 29.8773],
     福建: [119.4543, 25.9222],
-    湖南: [113.0823, 28.2568],
+    // 湖南: [113.0823, 28.2568],
     四川: [113.0823, 28.2568],
     云南: [102.9199, 25.4663],
     广东: [113.12244, 23.009505],
@@ -65,6 +65,7 @@
     浙江: 10000,
     河南: 10000,
     湖南: 10000,
+    四川: 10000,
     云南: 10000,
     广东: 10000,
     海南: 10000,
@@ -254,62 +255,62 @@
         zlevel: 1,
       },
       // 地图线的动画效果
-      {
-        type: 'lines',
-        zlevel: 2,
-        effect: {
-          show: true,
-          period: 4, // 箭头指向速度，值越小速度越快
-          trailLength: 0.02, // 特效尾迹长度[0,1]值越大，尾迹越长重
-          symbol: 'arrow', // 箭头图标
-          symbolSize: 3, // 图标大小
-        },
-        lineStyle: {
-          normal: {
-            color: colors,
-            width: 0.1, // 尾迹线条宽度
-            opacity: 0.5, // 尾迹线条透明度
-            curveness: 0.3, // 尾迹线条曲直度
-          },
-        },
-        data: convertToLineData(mapData, geoGpsMap),
-      },
-      {
-        type: 'scatter',
-        zlevel: 16,
-        coordinateSystem: 'geo',
-        symbolSize: 30,
-        symbol: `image://${logo}`,
-        data: cityIconData,
-        rippleEffect: {
-          period: 4,
-          brushType: 'stroke',
-          scale: 4,
-        },
-        tooltip: {
-          trigger: 'item',
-          padding: 0,
-          borderColor: 'black',
-          background: 'rgba(0,0,0,0.7)',
-          textStyle: {
-            fontSize: 20,
-          },
-          formatter(val) {
-            console.log('val=======', val)
-            let tipHtml = `
-                     <div class="m-info" style=" opacity: 0.95;background: rgba(25,27,29,1);" >
-                         <div class="title" style="padding-left: 12px;
-                         padding-top: 10px;
-                         padding-bottom: 10px;
-                         background: rgba(25,27,29,1);font-size: 20px;color: white;padding-right: 20px">${val.name}</div>
-<!--                         <div class="content" style=" padding: 12px; background: rgba(0,2,4,1);">-->
-          <!--                               <div style=" font-size: 22px; color: #ff0000;">258944</div>-->
-          <!--                        </div>-->
-          </div>`
-            return tipHtml
-          },
-        },
-      },
+      // {
+      //   type: 'lines',
+      //   zlevel: 2,
+      //   effect: {
+      //     show: true,
+      //     period: 4, // 箭头指向速度，值越小速度越快
+      //     trailLength: 0.02, // 特效尾迹长度[0,1]值越大，尾迹越长重
+      //     symbol: 'arrow', // 箭头图标
+      //     symbolSize: 3, // 图标大小
+      //   },
+      //   lineStyle: {
+      //     normal: {
+      //       color: colors,
+      //       width: 0.1, // 尾迹线条宽度
+      //       opacity: 0.5, // 尾迹线条透明度
+      //       curveness: 0.3, // 尾迹线条曲直度
+      //     },
+      //   },
+      //   data: convertToLineData(mapData, geoGpsMap),
+      // },
+      //       {
+      //         type: 'scatter',
+      //         zlevel: 16,
+      //         coordinateSystem: 'geo',
+      //         // symbolSize: 30,
+      //         // symbol: `image://${logo}`,
+      //         data: cityIconData,
+      //         // rippleEffect: {
+      //         //   period: 4,
+      //         //   brushType: 'stroke',
+      //         //   scale: 4,
+      //         // },
+      //         tooltip: {
+      //           trigger: 'item',
+      //           padding: 0,
+      //           borderColor: 'black',
+      //           background: 'rgba(0,0,0,0.7)',
+      //           textStyle: {
+      //             fontSize: 20,
+      //           },
+      //           formatter(val) {
+      //             console.log('val=======', val)
+      //             let tipHtml = `
+      //                      <div class="m-info" style=" opacity: 0.95;background: rgba(25,27,29,1);" >
+      //                          <div class="title" style="padding-left: 12px;
+      //                          padding-top: 10px;
+      //                          padding-bottom: 10px;
+      //                          background: rgba(25,27,29,1);font-size: 20px;color: white;padding-right: 20px">${val.name}</div>
+      // <!--                         <div class="content" style=" padding: 12px; background: rgba(0,2,4,1);">-->
+      //           <!--                               <div style=" font-size: 22px; color: #ff0000;">258944</div>-->
+      //           <!--                        </div>-->
+      //           </div>`
+      //             return tipHtml
+      //           },
+      //         },
+      //       },
     ],
   }
   let chart: EChartsType

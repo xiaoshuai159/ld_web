@@ -105,7 +105,8 @@
               background
               :current-page="pagination.currentPage"
               :page-size="pagination.pageSize"
-              layout=" prev, pager, next, jumper"
+              :page-sizes="[10, 20, 50, 100, 300]"
+              layout="sizes, prev, pager, next, jumper"
               :total="tableData.length"
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
@@ -521,6 +522,7 @@
   })
   const handleSizeChange = (val: number) => {
     console.log(`${val} items per page`)
+    pagination.pageSize = val // 更新每页显示的数据数量
   }
   const handleCurrentChange = (val: number) => {
     console.log(`current page: ${val}`)
@@ -599,7 +601,10 @@
         formData.append('get_date', dayjs(curXjData.get_date).format('YYYY-MM-DD'))
         formData.append('first_date', dayjs(curXjData.first_date).format('YYYY-MM-DD'))
         formData.append('update_date', dayjs(curXjData.update_date).format('YYYY-MM-DD'))
-        formData.append('file', curXjData.file[0].raw)
+        if (curXjData.file) {
+          formData.append('file', curXjData.file[0].raw)
+        }
+
         const { data: res2 } = await service.post('/api/v1/create_vul', formData)
         console.log(res2)
         xjDialogVisible.value = false
@@ -646,7 +651,9 @@
         formData.append('get_date', dayjs(curBjData.get_date).format('YYYY-MM-DD'))
         formData.append('first_date', dayjs(curBjData.first_date).format('YYYY-MM-DD'))
         formData.append('update_date', dayjs(curBjData.update_date).format('YYYY-MM-DD'))
-        formData.append('file', curBjData.file[0].raw)
+        if (curXjData.file) {
+          formData.append('file', curXjData.file[0].raw)
+        }
         // const formData = {
         //   vul_id: curBjData.vul_id,
         //   vul_name: curBjData.vul_name,
@@ -716,7 +723,7 @@
       vul_id = tableData.value.map((item) => item.vul_id)
     }
     // const vul_id = multipleSelection.value.map((item) => item.vul_id)
-    ElMessageBox.confirm('是否确定删除选中数据?', 'Warning', {
+    ElMessageBox.confirm('是否确定删除数据?', 'Warning', {
       confirmButtonText: '确认',
       cancelButtonText: '取消',
       type: 'warning',

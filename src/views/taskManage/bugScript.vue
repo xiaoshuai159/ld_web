@@ -101,7 +101,8 @@
               background
               :current-page="pagination.currentPage"
               :page-size="pagination.pageSize"
-              layout=" prev, pager, next, jumper"
+              :page-sizes="[10, 20, 50, 100, 300]"
+              layout="sizes, prev, pager, next, jumper"
               :total="tableData.length"
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
@@ -282,7 +283,7 @@
   let loading = ref(false)
   let dateValue = ref('')
   let curXjData: any = reactive({})
-  let curBjData: any = reactive({})
+  let curBjData: any = ref({})
   let curXqData: any = ref({})
   let xqDialogVisible = ref(false)
   let bjDialogVisible = ref(false)
@@ -327,6 +328,7 @@
   })
   const handleSizeChange = (val: number) => {
     console.log(`${val} items per page`)
+    pagination.pageSize = val // 更新每页显示的数据数量
   }
   const handleCurrentChange = (val: number) => {
     console.log(`current page: ${val}`)
@@ -371,8 +373,8 @@
     fileInputRef.value = document.querySelector('input[type=file]')
   })
   const xqClick = (row) => {
-    // console.log(row)
-    curXqData = row
+    console.log(row)
+    curXqData.value = row
     xqDialogVisible.value = true
   }
   // 删除 start ----------------------
@@ -415,7 +417,7 @@
       poc_id = tableData.value.map((item) => item.poc_id)
     }
     // const poc_id = multipleSelection.value.map((item) => item.poc_id)
-    ElMessageBox.confirm('是否确定删除选中数据?', 'Warning', {
+    ElMessageBox.confirm('是否确定删除数据?', 'Warning', {
       confirmButtonText: '确认',
       cancelButtonText: '取消',
       type: 'warning',
@@ -470,7 +472,10 @@
   }
   // 删除 end ----------------------
   const editHandler = (row) => {
-    curBjData = row
+    curBjData.value = row
+    const { file_url } = row
+    console.log(file_url)
+
     bjDialogVisible.value = true
   }
   // 新建 start -------------------
@@ -544,6 +549,13 @@
           searchClick()
           loading.value = false
         }, 1000)
+        curXjData.vul_name = ''
+        curXjData.vul_type = ''
+        curXjData.level = ''
+        curXjData.poc_name = ''
+        curXjData.poc_type = ''
+        curXjData.count = ''
+        formEl.resetFields()
       }
       //   } else {
       //     ElMessage.error(res.msg)
@@ -568,16 +580,16 @@
 
       if (valid) {
         const formData = new FormData()
-        formData.append('poc_id', curBjData.poc_name)
+        formData.append('poc_id', curBjData.value.poc_name)
         // formData.append('file', )
-        formData.append('vul_name', curBjData.vul_name)
-        formData.append('vul_type', curBjData.vul_type)
-        formData.append('level', curBjData.level)
-        formData.append('poc_name', curBjData.poc_name)
-        formData.append('poc_type', curBjData.poc_type)
-        formData.append('count', curBjData.count)
+        formData.append('vul_name', curBjData.value.vul_name)
+        formData.append('vul_type', curBjData.value.vul_type)
+        formData.append('level', curBjData.value.level)
+        formData.append('poc_name', curBjData.value.poc_name)
+        formData.append('poc_type', curBjData.value.poc_type)
+        formData.append('count', curBjData.value.count)
         formData.append('poc_file', fileList.value[0].raw)
-        formData.append('create_time', curBjData.create_time)
+        formData.append('create_time', curBjData.value.create_time)
         const { data: res } = await service.post('/api/v1/update_poc', formData)
         console.log(res)
         bjDialogVisible.value = false
@@ -597,7 +609,7 @@
     // bjDialogVisible.value = false // 关闭对话框
   }
   const downloadFile = () => {
-    console.log(curXqData.value.file_url)
+    console.log(curXqData.value)
 
     // window.location.href = curXqData.file_url
     const startIndex = curXqData.value.file_url.indexOf('/api/v1/download_poc')

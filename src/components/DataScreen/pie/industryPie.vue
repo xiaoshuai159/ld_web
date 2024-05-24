@@ -62,7 +62,7 @@
       type: 'pie',
       clockWise: false,
       // radius: [105, 109],  // 原
-      radius: [50, 60], //  改
+      radius: [50, 55], //  改
       hoverAnimation: false,
       // itemStyle: {
       //   normal: {

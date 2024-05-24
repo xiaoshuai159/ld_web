@@ -103,7 +103,8 @@
               background
               :current-page="pagination.currentPage"
               :page-size="pagination.pageSize"
-              layout=" prev, pager, next, jumper"
+              :page-sizes="[10, 20, 50, 100, 300]"
+              layout="sizes, prev, pager, next, jumper"
               :total="tableData.length"
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
@@ -356,6 +357,7 @@
   })
   const handleSizeChange = (val: number) => {
     console.log(`${val} items per page`)
+    pagination.pageSize = val // 更新每页显示的数据数量
   }
   const handleCurrentChange = (val: number) => {
     console.log(`current page: ${val}`)
@@ -428,6 +430,13 @@
           searchClick()
           loading.value = false
         }, 1000)
+        curXjData.ip = ''
+        curXjData.country = ''
+        curXjData.province = ''
+        curXjData.city = ''
+        curXjData.ips = ''
+        curXjData.unit = ''
+        formEl.resetFields()
         //   } else {
         //     // 代表特征名称重复
         //     ElMessage.error('该特征名称已存在，请重新输入！')
@@ -517,7 +526,7 @@
       asset_unit_id = tableData.value.map((item) => item.asset_unit_id)
     }
     // const asset_unit_id = multipleSelection.value.map((item) => item.asset_unit_id)
-    ElMessageBox.confirm('是否确定删除选中数据?', 'Warning', {
+    ElMessageBox.confirm('是否确定删除数据?', 'Warning', {
       confirmButtonText: '确认',
       cancelButtonText: '取消',
       type: 'warning',
