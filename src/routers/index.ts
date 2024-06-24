@@ -11,7 +11,7 @@ import taskManage from './modules/taskManage'
 import systemManage from './modules/systemManage'
 import dataScreenRouter from './modules/dataScreen'
 // 异步组件
-export const asyncRoutes = [...dataScreenRouter, ...basicDataManage, ...taskManage]
+export const asyncRoutes = [ ...dataScreenRouter,...basicDataManage, ...taskManage,]
 
 /**
  * path ==> 路由路径
@@ -49,21 +49,21 @@ export const constantRoutes: Array<RouteRecordRaw & extendRoute> = [
     hidden: true,
     meta: { title: '登录' },
   },
-  {
-    path: '/',
-    name: 'layout',
-    component: Layout,
-    redirect: '/home',
-    meta: { title: '仪表盘', icon: 'Odometer' },
-    children: [
-      {
-        path: '/home',
-        component: () => import('@/views/panel/index.vue'),
-        name: 'home',
-        meta: { title: '仪表盘', icon: 'Odometer', breadcrumb: false, role: ['other'] },
-      },
-    ],
-  },
+  // {
+  //   path: '/',
+  //   name: 'layout',
+  //   component: Layout,
+  //   redirect: '/home',
+  //   meta: { title: '仪表盘', icon: 'Odometer' },
+  //   children: [
+  //     {
+  //       path: '/home',
+  //       component: () => import('@/views/panel/index.vue'),
+  //       name: 'home',
+  //       meta: { title: '仪表盘', icon: 'Odometer', breadcrumb: false, role: ['other'] },
+  //     },
+  //   ],
+  // },
 ]
 
 /**

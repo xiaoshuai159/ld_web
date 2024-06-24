@@ -1,7 +1,7 @@
 <template>
   <div class="app-container demo-tabs">
-    <div class="my-header">资产归属管理表格</div>
-    <el-divider></el-divider>
+    <!-- <div class="my-header">资产归属管理表格</div>
+    <el-divider></el-divider> -->
     <div class="selectClass" style="margin-top: 15px">
       <el-row>
         <el-col :span="2"></el-col>
@@ -33,23 +33,21 @@
         </el-col>
       </el-row>
 
-      <!-- <el-row style="margin-top: 10px">
+      <el-row style="margin-top: 10px">
           <el-col :span="2"></el-col>
           <el-col :span="18">
             <div>
-              <span>特征类型：</span>
-              <el-select v-model="tzlxValue" placeholder="请选择" style="width: 220px">
-                <el-option v-for="item in tzlxOptions" :key="item.value" :label="item.label" :value="item.value" />
-              </el-select>
-              
+              <span>归属行业：</span>
+              <el-input v-model="industry" style="width: 220px" placeholder="请输入" />
             </div>
           </el-col>
-        </el-row> -->
+        </el-row>
     </div>
     <el-row style="margin-top: 16px">
       <el-col :span="1"></el-col>
       <el-col :span="19">
-        <el-button type="primary" :icon="Plus" @click="xjClick">新建</el-button>
+        <el-button type="primary" :icon="Plus" @click="dtClick">插入</el-button>
+        <el-button type="primary" @click="xjClick">批量导入</el-button>
         <el-button @click="multDel('mult')">批量删除</el-button>
         <el-button @click="multPut">批量导出</el-button>
         <el-button @click="multDel('all')">全部删除</el-button>
@@ -78,6 +76,7 @@
             <!-- <el-table-column prop="asset_id" label="特征编号" min-width="120" align="center" show-overflow-tooltip /> -->
             <!-- <el-table-column prop="asset_unit_id" label="资产归属id" sortable min-width="150" align="center"
               show-overflow-tooltip /> -->
+              <el-table-column prop="industry" label="归属行业" min-width="130" align="center" show-overflow-tooltip />
             <el-table-column prop="unit" label="归属单位" min-width="130" align="center" show-overflow-tooltip />
             <el-table-column prop="ip" label="IP地址" min-width="150" align="center" show-overflow-tooltip />
             <el-table-column prop="country" label="国家" min-width="100" align="center" show-overflow-tooltip />
@@ -129,6 +128,8 @@
         ><br />
         <span>运营商</span><span>{{ curXqData.ips }}</span
         ><br />
+        <span>归属行业</span><span>{{ curXqData.industry }}</span
+        ><br />
         <span>归属单位</span><span>{{ curXqData.unit }}</span
         ><br />
       </div>
@@ -149,6 +150,9 @@
         </el-form-item>
         <el-form-item label="运营商" prop="ips">
           <el-input v-model="curXjData.ips" placeholder="请输入运营商" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
+        </el-form-item>
+        <el-form-item label="归属行业" prop="industry">
+          <el-input v-model="curXjData.industry" placeholder="请输入归属行业" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
         </el-form-item>
         <el-form-item label="归属单位" prop="unit">
           <el-input v-model="curXjData.unit" placeholder="请输入归属单位" style="width: 220px" @keyup.enter="handleSubmit(xjForm)" />
@@ -187,6 +191,9 @@
         <el-form-item label="运营商" prop="ips">
           <el-input v-model="curBjData.ips" placeholder="请输入运营商" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
         </el-form-item>
+        <el-form-item label="归属行业" prop="industry">
+          <el-input v-model="curBjData.industry" placeholder="请输入归属行业" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
+        </el-form-item>
         <el-form-item label="归属单位" prop="unit">
           <el-input v-model="curBjData.unit" placeholder="请输入归属单位" style="width: 220px" @keyup.enter="handleSubmit2(bjForm)" />
         </el-form-item>
@@ -200,16 +207,18 @@
     </el-dialog>
     <el-dialog v-model="wjDialogVisible" width="30%">
       <div style="text-align: center; height: 140px; line-height: 140px; border: 1px #dddddd Dashed; border-radius: 5px">
-        <el-button :icon="Upload" @click="wjClick">上传文件</el-button>
-        <span style="margin: 0 10px 0 16px; color: #b3b3b3">/</span>
-        <el-button link type="info" @click="dtClick">手动输入（单条创建）</el-button>
+        <el-button :icon="Upload" @click="wjClick" :disabled="showProgress">上传文件</el-button>
+        <div><el-progress style="transform: translate(20px,2px)" :percentage="100" status="warning"
+            :indeterminate="true" :duration="1" v-if="showProgress" /><br /></div>
+        <!-- <span style="margin: 0 10px 0 16px; color: #b3b3b3">/</span>
+        <el-button link type="info" @click="dtClick">手动输入（单条创建）</el-button> -->
       </div>
-      <div style="display: flex; justify-content: center; margin-top: 10px">
+      <div style="display: flex; justify-content: center; margin-top: 20px">
         <el-icon color="#1890ff" size="20">
           <InfoFilled />
         </el-icon>
         <span style="color: #b3b3b3"
-          >请上传csv文件，大小在60M以内，点击<span style="color: blue; cursor: pointer" @click="downloadTemplate">下载模板</span></span
+          >请上传csv文件，点击<span style="color: blue; cursor: pointer" @click="downloadTemplate">下载模板</span></span
         >
       </div>
     </el-dialog>
@@ -226,12 +235,14 @@
     country: [{ required: true, message: '请输入国家', trigger: 'blur' }],
     unit: [{ required: true, message: '请输入归属单位', trigger: 'change' }],
   })
+  let showProgress = ref(false)
   let ip = ref('')
   let country = ref('')
   let province = ref('')
   let city = ref('')
   let ips = ref('')
   let unit = ref('')
+  let industry = ref('')
   let asset_name = ref('')
   let asset_type = ref('')
   let asset_star = ref('')
@@ -239,9 +250,9 @@
   let asset_area = ref('')
   let asset_icp = ref('')
   let zclxOptions = ref([
-    { label: '文件特征', value: '文件特征' },
-    { label: '网路特征', value: '网路特征' },
-    { label: '进程特征', value: '进程特征' },
+    { label: '网站', value: '网站' },
+    { label: '协议/服务', value: '协议/服务' },
+    { label: '其他', value: '其他' },
   ])
   let zcxjOptions = ref([
     { label: 1, value: 1 },
@@ -314,6 +325,7 @@
     fileInputRef.value.click()
   }
   const handleFileChange = (event) => {
+    showProgress.value = true
     file = event.target.files[0]
     const formData = new FormData()
     formData.append('file', file)
@@ -322,8 +334,10 @@
       if (res.code == 200) {
         ElMessage.success('上传成功')
         wjDialogVisible.value = false
+        showProgress.value = false
         file = null
         event.target.value = ''
+        
         searchClick()
         loading.value = true
         setTimeout(() => {
@@ -332,6 +346,7 @@
         }, 1000)
       } else {
         ElMessage.error(res.msg)
+        showProgress.value = false
         file = null
         event.target.value = ''
         searchClick()
@@ -380,6 +395,7 @@
       province: province.value,
       city: city.value,
       ips: ips.value,
+      industry: industry.value,
       unit: unit.value,
     }
     const { data: res } = await service.get('/api/v1/search_asset_unit', { params: reqData })
@@ -393,6 +409,7 @@
     province.value = ''
     city.value = ''
     ips.value = ''
+    industry.value = ''
     unit.value = ''
     searchClick()
   }
@@ -417,6 +434,7 @@
           province: curXjData.province,
           city: curXjData.city,
           ips: curXjData.ips,
+          industry: curXjData.industry,
           unit: curXjData.unit,
         }
         const { data: res2 } = await service.post('/api/v1/create_asset_unit', formData)
@@ -436,6 +454,7 @@
         curXjData.city = ''
         curXjData.ips = ''
         curXjData.unit = ''
+        curXjData.industry = ''
         formEl.resetFields()
         //   } else {
         //     // 代表特征名称重复
@@ -467,6 +486,7 @@
           province: curBjData.province,
           city: curBjData.city,
           ips: curBjData.ips,
+          industry: curBjData.industry,
           unit: curBjData.unit,
         }
         const { data: res } = await service.post('/api/v1/update_asset_unit', formData)
@@ -525,6 +545,10 @@
     } else {
       asset_unit_id = tableData.value.map((item) => item.asset_unit_id)
     }
+    if(asset_unit_id.length == 0){
+      ElMessage.error("请选择需要删除的数据！")
+      return false
+    }
     // const asset_unit_id = multipleSelection.value.map((item) => item.asset_unit_id)
     ElMessageBox.confirm('是否确定删除数据?', 'Warning', {
       confirmButtonText: '确认',
@@ -556,7 +580,10 @@
   const multPut = () => {
     const asset_unit_id = multipleSelection.value.map((item) => item.asset_unit_id)
     console.log(asset_unit_id)
-
+    if(asset_unit_id.length == 0){
+      ElMessage.error("请选择需要导出的数据！")
+      return false
+    }
     service({
       method: 'post',
       url: '/api/v1/export_asset_unit',

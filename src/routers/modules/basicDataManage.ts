@@ -3,8 +3,17 @@
 import Layout from '@/layout/index.vue'
 
 const basicDataManageRouter = [
+  // {
+  //   path: '/basicDataManage',
+  //   component: Layout,
+  //   redirect: '/basicDataManage/propertyFeature',
+  //   name: 'basicDataManage',
+  //   meta: {
+  //     title: '基础数据管理',
+  //     icon: 'Refrigerator',
+  //   },
   {
-    path: '/basicDataManage',
+    path: '/',
     component: Layout,
     redirect: '/basicDataManage/propertyFeature',
     name: 'basicDataManage',
